@@ -637,7 +637,6 @@ public class BuildingArea : MonoBehaviour
 
 	void Awake()
 	{
-		//// need to be changed to line ////////
 		Basement = GameObject.CreatePrimitive(PrimitiveType.Cube);
 		Basement.SetActive(false);
 
@@ -1261,13 +1260,16 @@ public class BuildingArea : MonoBehaviour
 				}
 
 				if (Input.GetMouseButtonDown(0))
+					
 				{
+
 					if (selectedWallFace != null)
 					{
 						cameraTarget = (selectedWallFace.a + selectedWallFace.b) * 0.5f + Vector3.up * selectedWallFace.Height * 0.5f;
 					}
 					if (Time.time - lastClickTime < DoubleClickCatchTime)
 					{
+
 						gameCamera.TargetObject = cameraTarget;
 					}
 					lastClickTime = Time.time;
@@ -1335,10 +1337,12 @@ public class BuildingArea : MonoBehaviour
 
 						snapObject.SetActive(true);
 						snapObject.transform.position = hit.point;
-						if (Input.GetMouseButtonDown(0) && verticesSelected.Count == 0)
+						///=============================
+						/// we add Input.GetMouseButtonUp(0) to solve the selelcted wall problem by draw on realsing the left click
+						/// ==============================
+						if ((Input.GetMouseButtonDown(0) || Input.GetMouseButtonUp(0))&& verticesSelected.Count == 0)
 						{
-
-							if (!pointASelected)
+						if (!pointASelected)
 							{
 								DraggedLine.Enabled = true;
 								//DraggedLine = new Line (hit.point, hit.point, DraggedLineMaterial);
@@ -1348,8 +1352,9 @@ public class BuildingArea : MonoBehaviour
 								pointASelected = true;
 
 							}
-							else
+							else 
 							{
+								Debug.Log ("55555555");
 
 								Vector3 pointB = hit.point;
 								lines = Line.Split(lines, pointA);
@@ -1393,10 +1398,10 @@ public class BuildingArea : MonoBehaviour
 									lines[i].Enabled = false;
 								}
 
-
-								regeneratePath(true);
-								///////// &&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&
+								GameObject.Destroy (upperWallFace);
+								upperWallFace = null;								
 								/// ///// code updated on jun10 
+								regeneratePath(true);
 
 								///////////&&&&&&&&&&&&&&&&&&&&&&&&&&&&&
 							}
