@@ -513,7 +513,7 @@ public class BuildingArea : MonoBehaviour
 
 		regeneratePath(true);
 	}
-
+	// used for task 3
 	public void SetSelectedWallFaceMaterials(Material innerMaterial, Material outerMaterial, Material sideMaterial)
 	{
 		// this function will be called from material panel
