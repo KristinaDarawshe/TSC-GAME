@@ -22,8 +22,10 @@ public enum ViewingMode
 
 public class BuildingArea : MonoBehaviour
 {
-	public Text SelectedWallArea, TotalWallArea, TotalWindowArea, TotalDoorArea, roofArea;
-	public InputField roofDepth, wallThick;
+    public float PublicFloatInsThick = 0.5f, PublicFloatWallThick = 0.1f;
+    public InputField roofDepth, wallThick, valueIns, valueWall;
+    public Text SelectedWallArea, TotalWallArea, TotalWindowArea, TotalDoorArea, roofArea;
+    
 	BuildingEditMode _mode;
 	public float RoofDepth = 0.4f;
 	public BuildingEditMode Mode
@@ -302,6 +304,8 @@ public class BuildingArea : MonoBehaviour
 		ba.TotalDoorArea = TotalDoorArea;
 		ba.TotalWindowArea = TotalWindowArea;
 		ba.wallThick = wallThick;
+        ba.valueIns = valueIns;
+        ba.valueWall = valueWall;
 	}
 
 	public void SetWorkingHeight(float y)
@@ -1850,6 +1854,64 @@ public class BuildingArea : MonoBehaviour
 	{
 		selectedWallFace = null;
 	}
+    //=============================================================================
+    //The function below - SetInsThicknessFromInputField() - sets the thickness to the Insulation Layer inside the wall
+    //=============================================================================
+    public void SetInsThicknessFromInputField()
+    {
+        try
+        {
+            PublicFloatInsThick = float.Parse(valueIns.text);//Get the value of Insulation Thickness from InputField
+            //Try and catch were used to deal with exceptions like: Unacceptable values as letters and so on.
+            if (PublicFloatInsThick > 0.05f)//The thickness of insulation doesn't exceed specific value
+            {
+                PublicFloatInsThick = 0.01f;//if it exceeds specific value (it will be set automatically to 0.01)
+            }
+        }
+        catch (System.Exception ex)
+        {
+            PublicFloatInsThick = 0.01f;//for Unacceptable vlaues set InsulationThickness to 0.01.
+        }
 
+        //Nothing of insulation Thickness Will be changed until modifying values of lines for Wall
+        //Values are existed in array Lines
+        //This array has the lines of all walls 
+        //We need to modify The thickness for each line.
+        for (int i = 0; i < lines.Count; i++)
+        {
+            lines[i].InsulationThickness = PublicFloatInsThick;
+        }
+        Debug.Log("Insulation Thickness is: " + PublicFloatInsThick);
+        regeneratePath(true);//To repaint Walls To apply Changes.
+    }
+
+    public void SetWallThicknessFromInputField()
+    {
+        try
+        {
+            PublicFloatWallThick = float.Parse(valueWall.text);//Get the value of Wall Thickness from InputField
+            //Try and catch were used to deal with exceptions like: Unacceptable values as letters and so on.
+            if (PublicFloatWallThick > 0.5f)//The thickness of Wall doesn't exceed specific value
+            {
+                PublicFloatWallThick = 0.1f;//if it exceeds specific value (it will be set automatically to 0.1)
+            }
+        }
+        catch (System.Exception ex)
+        {
+            Debug.Log("sorry");
+            PublicFloatWallThick = 0.1f;//for Unacceptable vlaues set InsulationThickness to 0.01.
+        }
+
+        //Nothing of Wall Thickness Will be changed until modifying values of lines for Wall
+        //Values are existed in array Lines
+        //This array has the lines of all walls 
+        //We need to modify The thickness for each line.
+        for (int i = 0; i < lines.Count; i++)
+        {
+            lines[i].WallThickness = PublicFloatWallThick;
+        }
+        Debug.Log("Wall Thickness is: " + PublicFloatWallThick);
+        regeneratePath(true);//To repaint Walls To apply Changes.
+    }
 
 }
