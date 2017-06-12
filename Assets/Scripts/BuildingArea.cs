@@ -1454,7 +1454,6 @@ public class BuildingArea : MonoBehaviour
 									DraggedLine.Enabled = false;
 
 
-
 								} else {
 									lines.Add(new Line(lineVertices, id1, id2, 0.1f, 0.1f, LineMaterial, DefaultInnerWallMaterial, DefaultOuterWallMaterial, DefaultSideMaterial));
 									lines[lines.Count - 1].Height = Height;
