@@ -1,4 +1,4 @@
 sceneSetups:
-- path: C:/Users/mahmood/Desktop/Trial/AppsTwonGame/Assets/GarageBuilder.unity
+- path: Assets/GarageBuilder.unity
   isLoaded: 1
   isActive: 1

@@ -109,7 +109,7 @@ MonoBehaviour:
   m_MinSize: {x: 713, y: 495}
   m_MaxSize: {x: 18008, y: 14045}
   vertical: 0
-  controlID: 4444
+  controlID: 720
 --- !u!114 &6
 MonoBehaviour:
   m_ObjectHideFlags: 52
@@ -133,7 +133,7 @@ MonoBehaviour:
   m_MinSize: {x: 436, y: 495}
   m_MaxSize: {x: 14006, y: 14045}
   vertical: 0
-  controlID: 4445
+  controlID: 721
 --- !u!114 &7
 MonoBehaviour:
   m_ObjectHideFlags: 52
@@ -183,7 +183,7 @@ MonoBehaviour:
   m_MinSize: {x: 234, y: 495}
   m_MaxSize: {x: 10004, y: 14045}
   vertical: 1
-  controlID: 4286
+  controlID: 743
 --- !u!114 &9
 MonoBehaviour:
   m_ObjectHideFlags: 52
@@ -362,14 +362,14 @@ MonoBehaviour:
     width: 699
     height: 614
   m_SceneLighting: 1
-  lastFramingTime: 210.13414187355053
-  m_2DMode: 0
+  lastFramingTime: 60095.83120688971
+  m_2DMode: 1
   m_isRotationLocked: 0
   m_AudioPlay: 0
   m_Position:
-    m_Target: {x: 31.799063, y: 554.82495, z: 2.1545944}
+    m_Target: {x: -60.5, y: 360, z: 0}
     speed: 2
-    m_Value: {x: 31.799063, y: 554.82495, z: 2.1545944}
+    m_Value: {x: -60.5, y: 360, z: 0}
   m_RenderMode: 0
   m_ValidateTrueMetals: 0
   m_SceneViewState:
@@ -384,26 +384,26 @@ MonoBehaviour:
       speed: 2
       m_Value: 0
     yGrid:
-      m_Target: 1
-      speed: 2
-      m_Value: 1
-    zGrid:
       m_Target: 0
       speed: 2
       m_Value: 0
+    zGrid:
+      m_Target: 1
+      speed: 2
+      m_Value: 1
   m_Rotation:
-    m_Target: {x: 0.17759681, y: -0.13680299, z: 0.024923898, w: 0.97424525}
+    m_Target: {x: 0, y: 0, z: 0, w: 1}
     speed: 2
-    m_Value: {x: -0.1775968, y: 0.13680299, z: -0.024923898, w: -0.9742452}
+    m_Value: {x: 0, y: 0, z: 0, w: 1}
   m_Size:
-    m_Target: 1214.0455
+    m_Target: 119.54247
     speed: 2
-    m_Value: 1214.0455
+    m_Value: 119.54247
   m_Ortho:
-    m_Target: 0
+    m_Target: 1
     speed: 2
-    m_Value: 0
-  m_LastSceneViewRotation: {x: -0.12601161, y: 0.49255288, z: -0.07232876, w: -0.85807383}
+    m_Value: 1
+  m_LastSceneViewRotation: {x: -0.08717229, y: 0.89959055, z: -0.21045254, w: -0.3726226}
   m_LastSceneViewOrtho: 0
   m_ReplacementShader: {fileID: 0}
   m_ReplacementString: 
@@ -437,9 +437,9 @@ MonoBehaviour:
     height: 251
   m_TreeViewState:
     scrollPos: {x: 0, y: 0}
-    m_SelectedIDs: f0a3ffff
-    m_LastClickedID: -23568
-    m_ExpandedIDs: 9ce1ffffd6eafffff6eaffff04ebffff0cebffff26ebffff42ebffffbefbffff00000000
+    m_SelectedIDs: ee050000
+    m_LastClickedID: 0
+    m_ExpandedIDs: befbffff00000000
     m_RenameOverlay:
       m_UserAcceptedRename: 0
       m_Name: 
@@ -499,19 +499,19 @@ MonoBehaviour:
     m_ShowAllHits: 0
     m_SearchArea: 0
     m_Folders:
-    - Assets
+    - Assets/Scripts
   m_ViewMode: 1
   m_StartGridSize: 16
   m_LastFolders:
-  - Assets
+  - Assets/Scripts
   m_LastFoldersGridSize: 16
-  m_LastProjectPath: D:\Game\Game-master\AppsTwonGame-master
+  m_LastProjectPath: D:\AppsTwonGame-master
   m_IsLocked: 0
   m_FolderTreeState:
     scrollPos: {x: 0, y: 0}
-    m_SelectedIDs: 28250000
-    m_LastClickedID: 9512
-    m_ExpandedIDs: 000000002825000016260000be26000000ca9a3bffffff7f
+    m_SelectedIDs: 42290000
+    m_LastClickedID: 10562
+    m_ExpandedIDs: 00000000aa250000f42700007c29000000ca9a3bffffff7f
     m_RenameOverlay:
       m_UserAcceptedRename: 0
       m_Name: 
@@ -539,7 +539,7 @@ MonoBehaviour:
     scrollPos: {x: 0, y: 0}
     m_SelectedIDs: 
     m_LastClickedID: 0
-    m_ExpandedIDs: 000000002825000016260000be26000000ca9a3bffffff7f
+    m_ExpandedIDs: 00000000aa250000f42700007c29000000ca9a3bffffff7f
     m_RenameOverlay:
       m_UserAcceptedRename: 0
       m_Name: 

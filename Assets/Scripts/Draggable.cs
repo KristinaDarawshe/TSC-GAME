@@ -141,7 +141,6 @@ public class Draggable : MonoBehaviour {
 						StartMoving (gameObject, startPosition, startPosition);
 //					saved = startPosition;
 					startedMoving = true;
-					Debug.Log ("1");
 				}
 			} else if (Input.GetMouseButton (0) && startedMoving) {
 				IsDragging = true;
@@ -152,8 +151,7 @@ public class Draggable : MonoBehaviour {
 				saved += dif;
 				transform.position = saved;
 				startPosition = mouseCurrentPosition;
-				Debug.Log ("2");
-
+				
 				//dif = snapToGrid (dif);
 
 
@@ -190,7 +188,6 @@ public class Draggable : MonoBehaviour {
 //					startPosition.y = saved.y;
 //				if (FreezeZ)
 //					startPosition.x = saved.z;
-				Debug.Log ("3");
 
 
 				startedMoving = false;
