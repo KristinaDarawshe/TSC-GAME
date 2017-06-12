@@ -210,8 +210,59 @@ public class EditableBuilding : MonoBehaviour {
 			}
 		}
 	}
+    //=================================================================================================
+    //This function -Below- calls other function in BuildingArea script 
+    //The name of function in BuildingArea is : SetInsThicknessFromInputField()
+    //This made in this way to control the event that occurs when changing The InputField (ValueIns) 
+    //This function should be related to the GUI :
+    //Steps to connect to GUI:
+    //1. Go to (insulation thick) object in the hierarchy and then to its child InputField
+    //2. Go to its event and drag Building object exists in the heirarchy to the (onChange) event. 
+    //3. Then choose this Function from EditableArea : SetInsThicknessFromInputField(). 
+    //=================================================================================================
+    public void SetInsThicknessFromInputField()
+    {
+        Debug.Log("say hiiii");
 
-	void Update () {
+        List<BuildingArea> layers = GetLayers();
+
+        for (int i = 0; i < layers.Count; i++)
+        {
+            if (layers[i].isActiveAndEnabled)
+            {
+
+                layers[i].SetInsThicknessFromInputField();
+
+
+                float x = 0.1f;
+                layers[i].SetInsThicknessFromInputField();
+
+            }
+        }
+    }
+    //=================================================================================================
+    //This function -Below- calls other function in BuildingArea script 
+    //The name of function in BuildingArea is : SetWallThicknessFromInputField()
+    //This made in this way to control the event that occurs when changing The InputField (ValueWall) 
+    //Steps to connect to GUI:
+    //1. Go to (exterior wall thickness) object in the hierarchy and then to its child InputField.
+    //2. Go to its event and drag Building object exists in the heirarchy to the (onChange) event. 
+    //3. Then choose this Function from EditableArea : SetWallThicknessFromInputField(). 
+    //=================================================================================================
+    public void SetWallThicknessFromInputField()
+    {
+        List<BuildingArea> layers = GetLayers();
+        for (int i = 0; i < layers.Count; i++)
+        {
+            if (layers[i].isActiveAndEnabled)
+            {
+                layers[i].SetWallThicknessFromInputField();
+                float x = 0.1f;
+                layers[i].SetWallThicknessFromInputField();
+            }
+        }
+    }
+    void Update () {
 		
 	}
 }
