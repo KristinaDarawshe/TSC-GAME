@@ -643,73 +643,77 @@ public class BuildingArea : MonoBehaviour
 
 
 
-    void Awake()
-    {
-        Basement = GameObject.CreatePrimitive(PrimitiveType.Cube);
-        Basement.SetActive(false);
+	void Awake()
+	{
+		Basement = GameObject.CreatePrimitive(PrimitiveType.Cube);
+		Basement.SetActive(false);
 
-        BuildingAreaCollider = GetComponent<Collider>();
-        viewingMode = ViewingMode.Exterior;
-        SelectedItem = null;
-        gameCamera = Camera.main.GetComponent<ObjectFollowCamera>();
-        DetachButton = GameObject.Find("Detach button").GetComponent<Button>();
-        DeleteButton = GameObject.Find("Delete button").GetComponent<Button>();
+		BuildingAreaCollider = GetComponent<Collider>();
+		viewingMode = ViewingMode.Exterior;
+		SelectedItem = null;
+		gameCamera = Camera.main.GetComponent<ObjectFollowCamera>();
 
-        if (snapObject != null)
-            snapObject = GameObject.Instantiate(snapObject);
+		DetachButton = GameObject.Find("Detach button").GetComponent<Button>();
+		DeleteButton = GameObject.Find("Delete button").GetComponent<Button>();
 
-        DraggedLine = new Line(new List<Vector3>() { Vector3.zero, Vector3.zero }, 0, 1, 0.2f, 0.2f, DraggedLineMaterial, null, null, null);
-        DraggedLine.Height = Height;
-        DraggedLine.Enabled = false;
+		if (snapObject != null) {
+			snapObject = GameObject.Instantiate (snapObject);
+			Debug.Log ("arrow appears");
+		}
+		DraggedLine = new Line(new List<Vector3>() { Vector3.zero, Vector3.zero }, 0, 1, 0.2f, 0.2f, DraggedLineMaterial, null, null, null);
+		DraggedLine.Height = Height;
+		DraggedLine.Enabled = false;
+		Debug.Log ("new floor starts ");
 
-        if (VertexHandle != null)
-        {
-            wallFaceHandleObject = GameObject.Instantiate(VertexHandle);
-            wallFaceHandleDraggable = wallFaceHandleObject.AddComponent<Draggable>();
-            wallFaceHandleDraggable.Enabled = false;
+		if (VertexHandle != null)
+		{
+			wallFaceHandleObject = GameObject.Instantiate(VertexHandle);
+			wallFaceHandleDraggable = wallFaceHandleObject.AddComponent<Draggable>();
+			wallFaceHandleDraggable.Enabled = false;
 
-            //        wallFaceHandleDraggable.XEnabled = true;
-            //        wallFaceHandleDraggable.YEnabled = false;
-            //        wallFaceHandleDraggable.ZEnabled = true;
-            //		wallFaceHandleDraggable.FreezeY = false;
-            //        wallFaceHandleDraggable.XSnapDistance = snapGridDistance;
-            //        wallFaceHandleDraggable.YSnapDistance = snapGridDistance;
-            //        wallFaceHandleDraggable.ZSnapDistance = snapGridDistance;
-            wallFaceHandleDraggable.StartMoving += WallFaceHandleDraggable_StartMoving;
-            wallFaceHandleDraggable.Moving += WallFaceHandleDraggable_Moving;
-            wallFaceHandleDraggable.EndMoving += WallFaceHandleDraggable_EndMoving;
+			//        wallFaceHandleDraggable.XEnabled = true;
+			//        wallFaceHandleDraggable.YEnabled = false;
+			//        wallFaceHandleDraggable.ZEnabled = true;
+			//		wallFaceHandleDraggable.FreezeY = false;
+			//        wallFaceHandleDraggable.XSnapDistance = snapGridDistance;
+			//        wallFaceHandleDraggable.YSnapDistance = snapGridDistance;
+			//        wallFaceHandleDraggable.ZSnapDistance = snapGridDistance;
+			wallFaceHandleDraggable.StartMoving += WallFaceHandleDraggable_StartMoving;
+			wallFaceHandleDraggable.Moving += WallFaceHandleDraggable_Moving;
+			wallFaceHandleDraggable.EndMoving += WallFaceHandleDraggable_EndMoving;
 
 
-            vertexAHandleObject = GameObject.Instantiate(VertexHandle);
-            vertexAHandleDraggable = vertexAHandleObject.AddComponent<Draggable>();
-            vertexAHandleDraggable.Enabled = false;
-            //        vertexAHandleDraggable.XEnabled = true;
-            //        vertexAHandleDraggable.YEnabled = false;
-            //        vertexAHandleDraggable.ZEnabled = true;
-            //		vertexAHandleDraggable.FreezeY = false;
-            //        vertexAHandleDraggable.XSnapDistance = snapGridDistance;
-            //        vertexAHandleDraggable.YSnapDistance = snapGridDistance;
-            //        vertexAHandleDraggable.ZSnapDistance = snapGridDistance;
-            vertexAHandleDraggable.StartMoving += vertexAHandleDraggable_StartMoving;
-            vertexAHandleDraggable.Moving += vertexAHandleDraggable_Moving;
-            vertexAHandleDraggable.EndMoving += vertexAHandleDraggable_EndMoving;
+			vertexAHandleObject = GameObject.Instantiate(VertexHandle);
+			vertexAHandleDraggable = vertexAHandleObject.AddComponent<Draggable>();
+			vertexAHandleDraggable.Enabled = false;
+			//        vertexAHandleDraggable.XEnabled = true;
+			//        vertexAHandleDraggable.YEnabled = false;
+			//        vertexAHandleDraggable.ZEnabled = true;
+			//		vertexAHandleDraggable.FreezeY = false;
+			//        vertexAHandleDraggable.XSnapDistance = snapGridDistance;
+			//        vertexAHandleDraggable.YSnapDistance = snapGridDistance;
+			//        vertexAHandleDraggable.ZSnapDistance = snapGridDistance;
+			vertexAHandleDraggable.StartMoving += vertexAHandleDraggable_StartMoving;
+			vertexAHandleDraggable.Moving += vertexAHandleDraggable_Moving;
+			vertexAHandleDraggable.EndMoving += vertexAHandleDraggable_EndMoving;
 
-            vertexBHandleObject = GameObject.Instantiate(VertexHandle);
-            vertexBHandleDraggable = vertexBHandleObject.AddComponent<Draggable>();
-            vertexBHandleDraggable.Enabled = false;
-            //        vertexBHandleDraggable.XEnabled = true;
-            //        vertexBHandleDraggable.YEnabled = false;
-            //        vertexBHandleDraggable.ZEnabled = true;
-            //		vertexBHandleDraggable.FreezeY = false;
-            //
-            //        vertexBHandleDraggable.XSnapDistance = snapGridDistance;
-            //        vertexBHandleDraggable.YSnapDistance = snapGridDistance;
-            //        vertexBHandleDraggable.ZSnapDistance = snapGridDistance;
-            vertexBHandleDraggable.StartMoving += vertexBHandleDraggable_StartMoving;
-            vertexBHandleDraggable.Moving += vertexBHandleDraggable_Moving;
-            vertexBHandleDraggable.EndMoving += vertexBHandleDraggable_EndMoving;
-        }
-    }
+			vertexBHandleObject = GameObject.Instantiate(VertexHandle);
+			vertexBHandleDraggable = vertexBHandleObject.AddComponent<Draggable>();
+			vertexBHandleDraggable.Enabled = false;
+			//        vertexBHandleDraggable.XEnabled = true;
+			//        vertexBHandleDraggable.YEnabled = false;
+			//        vertexBHandleDraggable.ZEnabled = true;
+			//		vertexBHandleDraggable.FreezeY = false;
+			//
+			//        vertexBHandleDraggable.XSnapDistance = snapGridDistance;
+			//        vertexBHandleDraggable.YSnapDistance = snapGridDistance;
+			//        vertexBHandleDraggable.ZSnapDistance = snapGridDistance;
+			vertexBHandleDraggable.StartMoving += vertexBHandleDraggable_StartMoving;
+			vertexBHandleDraggable.Moving += vertexBHandleDraggable_Moving;
+			vertexBHandleDraggable.EndMoving += vertexBHandleDraggable_EndMoving;
+		}
+		SetWorkingHeight (0.0f);
+	}
 
 
 
@@ -1043,6 +1047,7 @@ public class BuildingArea : MonoBehaviour
             {
                 for (int i = 0; i < wallFaces.Count; i++)
                 {
+					Debug.Log ("Inside Interior");
                     if (!wallFaces[i].IsFacingCamera || wallFaces[i].WallFaceType == WallFaceType.Outer)
                     {
                         wallFaces[i].Wireframe = true;
@@ -1447,6 +1452,7 @@ public class BuildingArea : MonoBehaviour
 									lines[lines.Count - 1].Parent = this.transform;
 									pointASelected = false;
 									DraggedLine.Enabled = false;
+
 
 
 								} else {
