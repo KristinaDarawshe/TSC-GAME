@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 
 public class InGameMenu : MonoBehaviour {
-	public GameObject panel;
+	public GameObject panel1;
 
     public void PauseGame()
     {
@@ -13,7 +13,7 @@ public class InGameMenu : MonoBehaviour {
     public void UnpauseGame()
     {
         Time.timeScale = 1;
-		panel.SetActive (false);
+		panel1.SetActive (false);
     }
 
 	public void ExitGame()
