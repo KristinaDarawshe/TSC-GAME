@@ -27,7 +27,7 @@ public class BuildingArea : MonoBehaviour
     public InputField roofDepth, wallThick, valueIns, valueWall;
     public Text SelectedWallArea, TotalWallArea, TotalWindowArea, TotalDoorArea, roofArea;//, wallThicktxt;
     // public Text ;
-    
+    public static float NumToRemoveError;
     BuildingEditMode _mode;
     public float RoofDepth = 0.4f;
     public BuildingEditMode Mode
@@ -362,7 +362,9 @@ public class BuildingArea : MonoBehaviour
     /// to make a shadow to the window or door
     /// </summary>
     GameObject tempObjectPlaceholder;
-
+    public static Vector3 PointAStatic;
+    public static Vector3 PointBStatic;
+    Vector3 pointB;
     void WallFaceHandleDraggable_StartMoving(GameObject sender, Vector3 oldPosition, Vector3 newPosition)
     {
         Mode = BuildingEditMode.WallFaceMoving;
@@ -670,6 +672,7 @@ public class BuildingArea : MonoBehaviour
 
 		if (VertexHandle != null)
 		{
+            
 			wallFaceHandleObject = GameObject.Instantiate(VertexHandle);
 			wallFaceHandleDraggable = wallFaceHandleObject.AddComponent<Draggable>();
 			wallFaceHandleDraggable.Enabled = false;
@@ -1097,7 +1100,8 @@ public class BuildingArea : MonoBehaviour
                     {
                         wallFaces[i].RelatedLine.Windows[j].Window.SetActive(true);
                     }
-                    wallFaces[i].gameObject.GetComponent<Collider>().enabled = true;
+                   if(wallFaces[i].gameObject!=null&& wallFaces[i].gameObject.GetComponent<Collider>()!=null)
+                        wallFaces[i].gameObject.GetComponent<Collider>().enabled = true;
 
                 }
             }
@@ -1114,10 +1118,11 @@ public class BuildingArea : MonoBehaviour
 
                                 if (SelectedItem == null)
                                 {
-
+                         
                                     WallFace wallface = getSelectedWallFace();
                                     if (wallface != null)
                                     {
+                                        //Select Wall
                                         selectedWallFace = wallface;
                                         Mode = BuildingEditMode.WallFaceSelected;
                                     }
@@ -1175,7 +1180,7 @@ public class BuildingArea : MonoBehaviour
                                     }
                                     else
                                     { // not window and not door
-
+                                        
                                         Vector3 location;
                                         Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
                                         RaycastHit hit;
@@ -1241,6 +1246,7 @@ public class BuildingArea : MonoBehaviour
                             }
                             else
                             {
+                                
                                 if (SelectedItem == null)
                                 {
 
@@ -1322,8 +1328,10 @@ public class BuildingArea : MonoBehaviour
                         break;
                     case BuildingEditMode.WallFaceSelected:
                         {
+                            //DeSelect Wall
                             if (Input.GetMouseButtonUp(0) && getSelectedWallFace() != null)
                             {
+                               
                                 selectedWallFace = null;
                             }
                         }
@@ -1336,6 +1344,7 @@ public class BuildingArea : MonoBehaviour
 
                 if (Input.GetMouseButtonDown(0))
                 {
+                    
                     if (selectedWallFace != null)
                     {
                         cameraTarget = (selectedWallFace.a + selectedWallFace.b) * 0.5f + Vector3.up * selectedWallFace.Height * 0.5f;
@@ -1417,6 +1426,7 @@ public class BuildingArea : MonoBehaviour
 
                             if (!pointASelected)
                             {
+                               
                                 DraggedLine.Enabled = true;
                                 //DraggedLine = new Line (hit.point, hit.point, DraggedLineMaterial);
                                 pointA = hit.point;
@@ -1427,8 +1437,9 @@ public class BuildingArea : MonoBehaviour
                             }
                             else
                             {
-
-                                Vector3 pointB = hit.point;
+                                
+                                pointB = hit.point;
+                                
                                 lines = Line.Split(lines, pointA);
                                 lines = Line.Split(lines, pointB);
                                 int id1 = lineVertices.FindIndex(delegate (Vector3 obj) {
@@ -1455,6 +1466,7 @@ public class BuildingArea : MonoBehaviour
 									lines[lines.Count - 1].Parent = this.transform;
 									pointASelected = false;
 									DraggedLine.Enabled = false;
+
 
 
 								} else {
@@ -1507,7 +1519,8 @@ public class BuildingArea : MonoBehaviour
 
             }
         }
-
+        Draggable.lines = lines;
+       
     }
 
     void OnDisable()
@@ -1967,8 +1980,10 @@ public class BuildingArea : MonoBehaviour
     public float returnWallArea()
     {
         float wallSum = 0;
-        wallSum += (selectedWallFace.RelatedLine.a - selectedWallFace.RelatedLine.b).magnitude;
-        wallSum *= selectedWallFace.Height;
+        if (selectedWallFace != null) { 
+            wallSum += (selectedWallFace.RelatedLine.a - selectedWallFace.RelatedLine.b).magnitude;
+            wallSum *= selectedWallFace.Height;
+        }
         return wallSum;
     }
 
