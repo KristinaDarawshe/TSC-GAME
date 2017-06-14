@@ -210,6 +210,18 @@ public class EditableBuilding : MonoBehaviour {
 			}
 		}
 	}
+
+	public void DetachSelectedWall(){
+
+		List<BuildingArea> layers = GetLayers ();
+
+		for (int i = 0; i < layers.Count; i++) {
+			if (layers [i].isActiveAndEnabled) {
+				layers [i].DetachSelectedWall();
+
+			}
+		}
+	}
     //=================================================================================================
     //This function -Below- calls other function in BuildingArea script 
     //The name of function in BuildingArea is : SetInsThicknessFromInputField()

@@ -22,7 +22,7 @@ public class ItemsManager : MonoBehaviour
         ToggleGroup tg = GetComponent<ToggleGroup>();
         for (int i = 0; i < allObjectList.Count; i++)
         {
-            if (allObjectList[i].itemType != type.Roof && allObjectList[i].itemType != type.Wall)
+			if (allObjectList[i].itemType != type.Roof )//&& allObjectList[i].itemType != type.Wall)
             {
 
                 GameObject button = (GameObject)Instantiate(MenuItem);
@@ -46,7 +46,10 @@ public class ItemsManager : MonoBehaviour
                         itemSelected(null);
 
                 }));
-                if (allObjectList[i].itemType == type.Window)
+				if (allObjectList [i].itemType == type.Wall) {
+					button.transform.SetParent(wallPanel.transform);//Setting button parent
+				}
+					else if (allObjectList[i].itemType == type.Window)
                 {
                     button.transform.SetParent(windwoPanel.transform);//Setting button parent
                 }

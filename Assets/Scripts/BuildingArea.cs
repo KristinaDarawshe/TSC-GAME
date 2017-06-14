@@ -46,7 +46,7 @@ public class BuildingArea : MonoBehaviour
             }
             else
             {
-                //MaterialsPanel.SetActive (false);
+               // MaterialsPanel.SetActive (false);
                 //WindowMaterialPanel.SetActive (false);
             }
         }
@@ -87,7 +87,8 @@ public class BuildingArea : MonoBehaviour
     public Material WallSelectedMaterial;
     public Material WallWireframeMaterial;//
 
-    //public GameObject MaterialsPanel;
+    
+   public GameObject MaterialsPanel;
     public GameObject WindowMaterialPanel;
 
     public Material DefaultOuterWallMaterial;
@@ -326,7 +327,7 @@ public class BuildingArea : MonoBehaviour
             }
         }
         Vector3[] aGrid = grid.ToArray();
-        vertexAHandleDraggable.SetAllowedPoints(aGrid);
+        //vertexAHandleDraggable.SetAllowedPoints(aGrid);
         vertexBHandleDraggable.SetAllowedPoints(aGrid);
         wallFaceHandleDraggable.SetAllowedPoints(aGrid);
     }
@@ -503,11 +504,13 @@ public class BuildingArea : MonoBehaviour
     public GameObject upperWallFace;
 
     public void DetachSelectedWall()
-    {
-        selectedWallFace.RelatedLine.DetachA();
-        selectedWallFace.RelatedLine.DetachB();
+	{
+		if (selectedWallFace != null) {
+			selectedWallFace.RelatedLine.DetachA ();
+			selectedWallFace.RelatedLine.DetachB ();
 
-        regeneratePath(true);
+			regeneratePath (true);
+		}
     }
 
 
@@ -1870,13 +1873,27 @@ public class BuildingArea : MonoBehaviour
     }
 
 
-    public void SetOuterWallMaterial(Material Mat)
-    {
-        if (Mat != null)
-        {
-            SetSelectedWallFaceMaterials(DefaultInnerWallMaterial, Mat, DefaultSideMaterial);
-        }
-    }
+	public void SetOuterWallMaterial(Material Mat)
+	{
+		if (Mat != null)
+		{
+			if (_selectedWallFace .WallFaceType == WallFaceType.Outer) {
+				Debug.Log ("ChangeOutterWallMaterial ");
+				SetSelectedWallFaceMaterials(DefaultInnerWallMaterial, Mat, DefaultSideMaterial);
+			}
+		}
+	}
+
+	public void SetInnerWallMaterial(Material Mat)
+	{
+		if (Mat != null)
+		{
+			if (_selectedWallFace .WallFaceType == WallFaceType.Outer) {
+				Debug.Log ("ChangeInnerWallMaterial ");
+				SetSelectedWallFaceMaterials(Mat,DefaultOuterWallMaterial, DefaultSideMaterial);
+			}
+		}
+	}
 
 
     /* public void GetWallArea()
