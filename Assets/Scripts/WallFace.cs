@@ -12,10 +12,15 @@ public enum WallFaceType
 
 public class WallFace
 {
-	public WallFace(Vector3 a, Vector3 b, float upoffset, float height, Material wallMaterial, Material wireframeMaterial, Material selectedWallMaterial, Line relatedSegment){
+    public static Vector3 VarA;
+    public static Vector3 VarB;
+    public WallFace(Vector3 a, Vector3 b, float upoffset, float height, Material wallMaterial, Material wireframeMaterial, Material selectedWallMaterial, Line relatedSegment){
 		_a = a;
+        
 		_b = b;
-		_upOffset = upoffset;
+        VarA = a;
+        VarB = b;
+        _upOffset = upoffset;
 		_height = height;
 
 		wireframeLines = new Line[6];
@@ -25,7 +30,13 @@ public class WallFace
 		WireframeMaterial = wireframeMaterial;
 		update ();
 		WallMaterial = wallMaterial;
-		gameObject.AddComponent<MeshCollider> ();
+        
+        if (Vector3.Distance(WallFace.VarA, WallFace.VarB) > 0.1)
+            //This condition is related to the area of the wall When dragging it.
+            gameObject.AddComponent<MeshCollider>();
+        
+        
+        //}
 		Wireframe = false;
 		SelectedMaterial = selectedWallMaterial;
 		RelatedLine = relatedSegment;
@@ -55,10 +66,11 @@ public class WallFace
 
 	public bool IsMouseOver(out float dst)
 	{
-		RaycastHit rh;
+        bool b;
+        RaycastHit rh;
 		Ray ray = Camera.main.ScreenPointToRay (Input.mousePosition);
 		Collider coll = gameObject.GetComponent<MeshCollider> ();
-		bool b = coll.Raycast (ray, out rh, float.MaxValue);
+		 b = coll.Raycast (ray, out rh, float.MaxValue);
 		dst = rh.distance;
 		return b;
 	}
@@ -193,7 +205,8 @@ public class WallFace
 			return mr.enabled;
 		}
 		set{
-			mr.enabled = value;
+            if(mr!=null)
+			    mr.enabled = value;
 		}
 	}
 
@@ -228,7 +241,8 @@ public class WallFace
 			for (int i = 0; i < wireframeLines.Length; i++) {
 				wireframeLines [i].Parent = value;
 			}
-			gameObject.transform.parent = value;
+            if(gameObject!=null&&gameObject.transform.parent!=null)
+			    gameObject.transform.parent = value;
 		}
 	}
 

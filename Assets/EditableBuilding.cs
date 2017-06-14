@@ -263,8 +263,12 @@ public class EditableBuilding : MonoBehaviour {
         }
     }
     void Update () {
-		
-	}
+        if (Draggable.DragIfNotZero)
+            //This Line above checks if the red square on PointA
+            //or PointB dragged in illegable case which leads 
+            //to make Null wall object with area zero
+            DeleteSelectedWall();// If this Happened just delete the wall
+    }
 }
 
 

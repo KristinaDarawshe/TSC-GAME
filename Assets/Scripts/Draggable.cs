@@ -14,7 +14,10 @@ public enum DraggablePlane
 public class Draggable : MonoBehaviour {
 
 	DraggablePlane draggingPlane = DraggablePlane.XZ;
-	public DraggablePlane DraggingPlane
+    public static List<Line> lines = new List<Line>();
+    public static bool DragIfNotZero;
+    public static float XNum ;
+    public DraggablePlane DraggingPlane
 	{
 		get {
 			return draggingPlane;
@@ -143,6 +146,24 @@ public class Draggable : MonoBehaviour {
 					startedMoving = true;
 				}
 			} else if (Input.GetMouseButton (0) && startedMoving) {
+                //======================================================================
+                //======================================================================
+                //These lines are made to solve the problem of wall selection.
+                //This problem happens when dragging PointA or PointB of the wall in 
+                //way that the area of wall becomes zero
+                if (Vector3.Distance(WallFace.VarA, WallFace.VarB)<0.1) {
+                    for (int i=0; i<lines.Count; i++) {
+                        if (lines[i].a == WallFace.VarA) {
+                            lines[i].a = new Vector3(0.01f, lines[i].a.y , 0.01f);
+                            lines[i].b = new Vector3(lines[i].b.x, lines[i].b.y , lines[i].b.z);
+                        }
+                    }
+                    DragIfNotZero = true;
+
+                }
+                DragIfNotZero = false;
+                //=======================================================================
+                //=======================================================================
 				IsDragging = true;
 				Vector3 mouseCurrentPosition = Camera.main.ScreenToWorldPoint (new Vector3 (Input.mousePosition.x, Input.mousePosition.y, distance));
 				mouseCurrentPosition = snapToGrid (mouseCurrentPosition);
@@ -151,23 +172,23 @@ public class Draggable : MonoBehaviour {
 				saved += dif;
 				transform.position = saved;
 				startPosition = mouseCurrentPosition;
-				
-				//dif = snapToGrid (dif);
+
+                //dif = snapToGrid (dif);
 
 
-				//unsnappedPosition += dif;
+                //unsnappedPosition += dif;
 
-//				Vector3 tmp = snapToGrid (unsnappedPosition);
-//				if (!XEnabled)
-//					tmp.x = startPosition.x;
-//				if (!YEnabled)
-//					tmp.y = startPosition.y;
-//				if (!ZEnabled)
-//					tmp.z = startPosition.z;
-//				tmp += offsetToGrid;
+                //				Vector3 tmp = snapToGrid (unsnappedPosition);
+                //				if (!XEnabled)
+                //					tmp.x = startPosition.x;
+                //				if (!YEnabled)
+                //					tmp.y = startPosition.y;
+                //				if (!ZEnabled)
+                //					tmp.z = startPosition.z;
+                //				tmp += offsetToGrid;
 
 
-
+                Debug.Log("Dif "+dif.sqrMagnitude);
 				if (Moving != null && dif.sqrMagnitude > 0.00001f)
 					Moving (gameObject, startPosition - dif, startPosition);
 				
