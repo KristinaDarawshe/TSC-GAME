@@ -1745,6 +1745,7 @@ public class Line
 					Vector3 tmp;
 					if (RayRayIntersection(out tmp, x1[i], x2[i], lines[k].a, lines[k].b))
 					{
+						
 						float dst = (tmp - x1 [i]).sqrMagnitude;
 						if (dst < (x2[i] - x1[i]).sqrMagnitude && dst > epsilon)
 						{
@@ -1754,20 +1755,6 @@ public class Line
 								{
 									if ((tmp - lines [k].a).sqrMagnitude > epsilon && (tmp - lines [k].b).sqrMagnitude > epsilon)
 									{
-										//										if (eeee > 1000 && eeee < 1100) {
-										//											{
-										//												string sssss = ("e1 = " + e1 + "e2[] = " + e2 [0] + "" + e2 [1] + "\n");
-										//
-										//												for (int kkk = 0; kkk < lines.Count; ++kkk) {
-										//													sssss += (lines [kkk].a.x + "\t" + lines [kkk].a.z + "\t" + (kkk * 2) + "\n");
-										//													sssss += (lines [kkk].b.x + "\t" + lines [kkk].b.z + "\t" + (kkk * 2 + 1) + "\n");
-										//												}
-										//												sssss += "REFUSED " + x1 [i] + " " + x2 [i] + "\n";
-										//												sssss += ("____\n");
-										//												Debug.Log (msgCount + "\n" + sssss);
-										//												msgCount++;
-										//											}
-										//										}
 										flag = false;
 										break;
 									}
@@ -1789,7 +1776,9 @@ public class Line
 								tmpp1 = (tmp - lines [k].a).sqrMagnitude;
 								tmpp2 = (tmp - lines [k].b).sqrMagnitude;
 								if ((tmp - lines [k].a).sqrMagnitude > epsilon && (tmp - lines [k].b).sqrMagnitude > epsilon) {
+									
 									if (Vector3.Dot (tmp - lines [k].a, lines [k].b - lines [k].a) >= 0) {
+										
 										intersectionCount [i]++;
 									}
 								}
@@ -1821,9 +1810,6 @@ public class Line
 					Debug.Log ("abc != 3");
 				}
 
-
-
-
 				list.RemoveAt(Mathf.Max(e1, e2[0]));
 				list.RemoveAt(Mathf.Min(e1, e2[0]));
 				// if new line not already exist
@@ -1836,12 +1822,11 @@ public class Line
 
 			if (e2indices.Contains(1) && intersectionCount[1] % 2 == 1)
 			{
-				//				triangles.Add (ix1);
-				//				triangles.Add (list [e1].aID == ix1 ? list [e1].bID : list [e1].aID);
-				//				triangles.Add (ix2);
+
 				HashSet<int> abc = new HashSet<int>() { ix1[1], ix2[1], list[e1].aID, list[e1].bID };
 				//                if (abc.Count == 3)
 				triangles.AddRange(abc);
+			//	Debug.Log("iafter ");
 				if (abc.Count != 3) {
 
 
@@ -1860,13 +1845,9 @@ public class Line
 				continue;
 			}
 
-			if (list.Count <= 3)
-			{
-
-				//				triangles.Add (list [0].aID);
-				//				triangles.Add (list [0].bID);
-				//				triangles.Add (list [1].aID == list [0].aID ? list [1].bID : list [1].aID);
-
+	if (list.Count <= 3)
+		{
+//
 				HashSet<int> abc = new HashSet<int>() { list[0].aID, list[0].bID, list[1].aID, list[1].bID };
 				//				if (abc.Count == 3)
 				triangles.AddRange(abc);
@@ -1880,9 +1861,9 @@ public class Line
 
 				//				for (int i = 0; i < triangles.Count; i += 3) {
 				//					Debug.Log (triangles [i] + " " + triangles [i + 1] + " " + triangles [i + 2] + "\n");
-				//				}
-				break;
-			}
+				//			}
+			//break;
+		}
 		}
 
 

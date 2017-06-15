@@ -328,8 +328,8 @@ public class BuildingArea : MonoBehaviour
         }
         Vector3[] aGrid = grid.ToArray();
         //vertexAHandleDraggable.SetAllowedPoints(aGrid);
-        vertexBHandleDraggable.SetAllowedPoints(aGrid);
-        wallFaceHandleDraggable.SetAllowedPoints(aGrid);
+//        vertexBHandleDraggable.SetAllowedPoints(aGrid);
+        //wallFaceHandleDraggable.SetAllowedPoints(aGrid);
     }
 
     List<GameObject> items = new List<GameObject>();
@@ -663,12 +663,12 @@ public class BuildingArea : MonoBehaviour
 
 		if (snapObject != null) {
 			snapObject = GameObject.Instantiate (snapObject);
-			Debug.Log ("arrow appears");
+//			Debug.Log ("arrow appears");
 		}
 		DraggedLine = new Line(new List<Vector3>() { Vector3.zero, Vector3.zero }, 0, 1, 0.2f, 0.2f, DraggedLineMaterial, null, null, null);
 		DraggedLine.Height = Height;
 		DraggedLine.Enabled = false;
-		Debug.Log ("new floor starts ");
+		//Debug.Log ("new floor starts ");
 
 		if (VertexHandle != null)
 		{
@@ -1458,18 +1458,19 @@ public class BuildingArea : MonoBehaviour
                                     id2 = lineVertices.Count;
                                     lineVertices.Add(pointB);
                                 }
+								//regeneratePath(true);
 
-
+								// draw the basemenet if true else draw the floors
 								if (IsBasement) {
+									
 									lines.Add(new Line(lineVertices, id1, id2, 0.1f, 0.1f, LineMaterial, DefaultInnerWallMaterial, DefaultOuterWallMaterial, DefaultSideMaterial));
 									lines[lines.Count - 1].Height =BasementHeight;
 									lines[lines.Count - 1].Parent = this.transform;
 									pointASelected = false;
 									DraggedLine.Enabled = false;
-
-
-
-								} else {
+									Debug.Log ("isbasement");
+								} 
+								else {
 									lines.Add(new Line(lineVertices, id1, id2, 0.1f, 0.1f, LineMaterial, DefaultInnerWallMaterial, DefaultOuterWallMaterial, DefaultSideMaterial));
 									lines[lines.Count - 1].Height = Height;
 									lines[lines.Count - 1].Parent = this.transform;
@@ -1831,6 +1832,7 @@ public class BuildingArea : MonoBehaviour
 			}
 
 			if (m != null) {
+				
 				GameObject.Destroy (upperWallFace);
 				upperWallFace = null;
 				upperWallFace = new GameObject("upper wall face");
