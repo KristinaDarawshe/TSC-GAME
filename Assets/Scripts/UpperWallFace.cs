@@ -257,7 +257,7 @@ public class UpperWallFace : MonoBehaviour
 			float pathidDst = 0;
 			// bug .. [\] will not work correctly
 
-			int[] intersectionCount = new int[100];
+			int[] intersectionCount = new int[10];
 
 
 			for (int test = 0; test < intersectionCount.Length; test++) {

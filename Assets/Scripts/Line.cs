@@ -479,6 +479,7 @@ public class Line
                         Line l = new Line(output[i].Vertices, newid, output[i].bID, output[i].InsulationThickness, output[i].WallThickness, output[i].LineMaterial, output[i].InnerMaterial, output[i].OuterMaterial, output[i].SideMaterial);
                         l.Enabled = output[i].Enabled;
                         l.Parent = output[i].Parent;
+						l.Height = output [i].Height;
                         output[i].bID = newid;
                         output.Add(l);
                     }
@@ -536,11 +537,24 @@ public class Line
 
         return output;
     }
-
-    static bool isPointOverLine(Vector3 a, Vector3 b, Vector3 p)
+	//p a point totest if its over the line ab
+	public  static bool isPointOverLine(Vector3 a, Vector3 b, Vector3 p)
     {
 		return Mathf.Abs((a - b).magnitude - ((a - p).magnitude + (b - p).magnitude)) <= epsilon;
+
     }
+
+	public static bool isPointOverPath(List<Line> lines,  Vector3 p){
+		for (int i = 0; i < lines.Count; i++) {
+			if (isPointOverLine (lines [i].a, lines[i].b, p)) {
+				return true;
+
+			}
+	
+		}
+		return false;
+
+	}
 
     static void WeldInterstion(List<Vector3> segmentsWithContour, int l11, int l12, int l21, int l22)
     {
@@ -885,7 +899,7 @@ public class Line
     //  }
 
 
-    public static void Generate3DWallFacesFromLines(List<Line> _segments, Material WallWireframeMaterial, Material WallSelectedMaterial, out List<WallFace> outerWall, out List<WallFace> doorSides, out List<WallFace> innerWall, out GameObject upperWallFace, out List<Mesh> floors)
+    public static void Generate3DWallFacesFromLines(bool interior,List<Line> _segments, Material WallWireframeMaterial, Material WallSelectedMaterial, out List<WallFace> outerWall, out List<WallFace> doorSides, out List<WallFace> innerWall, out GameObject upperWallFace, out List<Mesh> floors)
     {
         if (_segments.Count == 0)
         {
@@ -899,152 +913,158 @@ public class Line
         List<Line> segments = new List<Line>();
 
         List<Vector3> vbuffer = new List<Vector3>();
+		if (interior) {
+			for (int i = 0; i < _segments.Count; i++)
+				segments.Add (_segments [i]);
+		
+		} else {
+			for (int i = 0; i < _segments.Count; i++)
+			{
+
+				List<WallWindow> windows = new List<WallWindow>();
+				windows.AddRange(_segments[i].Windows);
+				for (int j = 0; j < _segments[i].Doors.Count; ++j)
+					windows.Add(_segments[i].Doors[j]);
+
+
+				if (windows.Count != 0)
+				{
+					windows.Sort(delegate (WallWindow x, WallWindow y) {
+						return x.Position.x.CompareTo(y.Position.x);
+					});
+
+					if (windows[0].Position.x != 0)
+					{
+
+						int id1 = vbuffer.FindIndex (delegate(Vector3 obj) {
+							return (obj - _segments [i].a).sqrMagnitude <= 0.0001f;
+						});
+
+						if (id1 == -1)
+						{
+							id1 = vbuffer.Count;
+							vbuffer.Add(_segments[i].a);
+						}
+						Vector3 v2 = _segments[i].a + (_segments[i].b - _segments[i].a).normalized * windows[0].Position.x;
+						int id2 = vbuffer.FindIndex (delegate(Vector3 obj) {
+							return (obj - v2).sqrMagnitude <= 0.0001f;
+						});
+						if (id2 == -1)
+						{
+							id2 = vbuffer.Count;
+							vbuffer.Add(v2);
+						}
+
+						Line firstSeg = new Line(vbuffer, id1, id2, _segments[i].InsulationThickness, _segments[i].WallThickness, _segments[i].LineMaterial, _segments[i].InnerMaterial, _segments[i].OuterMaterial, _segments[i].SideMaterial);
+						firstSeg.Height = _segments[i].Height;
+						firstSeg.LineType = LineType.Wall;
+						firstSeg.ParentLine = _segments[i];
+						segments.Add(firstSeg);
+					}
+
+					for (int j = 0; j < windows.Count - 1; j++)
+					{
+						Vector3 start = _segments[i].a + (_segments[i].b - _segments[i].a).normalized * windows[j].Position.x;
+						Vector3 end = _segments[i].a + (_segments[i].b - _segments[i].a).normalized * (windows[j].Position.x + windows[j].WindowWidth);
+
+						int istart = vbuffer.FindIndex (delegate(Vector3 obj) {
+							return (obj - start).sqrMagnitude <= 0.0001f;
+						});
+						if (istart == -1)
+						{
+							istart = vbuffer.Count;
+							vbuffer.Add(start);
+						}
+						int iend = vbuffer.FindIndex (delegate(Vector3 obj) {
+							return (obj - end).sqrMagnitude <= 0.0001f;
+						});
+						if (iend == -1)
+						{
+							iend = vbuffer.Count;
+							vbuffer.Add(end);
+						}
+
+
+						Line windowSeg = new Line(vbuffer, istart, iend, _segments[i].InsulationThickness, _segments[i].WallThickness, _segments[i].LineMaterial, _segments[i].InnerMaterial, _segments[i].OuterMaterial, _segments[i].SideMaterial);
+						windowSeg.LedgeHeight = windows[j].Position.y;
+						windowSeg.WindowHeight = windows[j].WindowHeight;
+						windowSeg.LineType = LineType.Window;
+						windowSeg.Height = _segments[i].Height;
+						windowSeg.ParentLine = _segments[i];
+						segments.Add(windowSeg);
+
+						Vector3 nextStart = _segments[i].a + (_segments[i].b - _segments[i].a).normalized * windows[j + 1].Position.x;
+						int inextStart = vbuffer.FindIndex (delegate(Vector3 obj) {
+							return (obj - nextStart).sqrMagnitude <= 0.0001f;
+						});
+						if (inextStart == -1)
+						{
+							inextStart = vbuffer.Count;
+							vbuffer.Add(nextStart);
+						}
+						Line nextSeg = new Line(vbuffer, iend, inextStart, _segments[i].InsulationThickness, _segments[i].WallThickness, _segments[i].LineMaterial, _segments[i].InnerMaterial, _segments[i].OuterMaterial, _segments[i].SideMaterial);
+						nextSeg.Height = _segments[i].Height;
+						nextSeg.LineType = LineType.Wall;
+						nextSeg.ParentLine = _segments[i];
+						segments.Add(nextSeg);
+					}
+
+					{
+						Vector3 start = _segments[i].a + (_segments[i].b - _segments[i].a).normalized * windows[windows.Count - 1].Position.x;
+						Vector3 end = _segments[i].a + (_segments[i].b - _segments[i].a).normalized * (windows[windows.Count - 1].Position.x + windows[windows.Count - 1].WindowWidth);
+						int istart = vbuffer.FindIndex (delegate(Vector3 obj) {
+							return (obj - start).sqrMagnitude <= 0.0001f;
+						});
+						if (istart == -1)
+						{
+							istart = vbuffer.Count;
+							vbuffer.Add(start);
+						}
+						int iend = vbuffer.FindIndex (delegate(Vector3 obj) {
+							return (obj - end).sqrMagnitude <= 0.0001f;
+						});
+						if (iend == -1)
+						{
+							iend = vbuffer.Count;
+							vbuffer.Add(end);
+						}
+
+
+						Line windowSeg = new Line(vbuffer, istart, iend, _segments[i].InsulationThickness, _segments[i].WallThickness, _segments[i].LineMaterial, _segments[i].InnerMaterial, _segments[i].OuterMaterial, _segments[i].SideMaterial);
+						windowSeg.LedgeHeight = windows[windows.Count - 1].Position.y;
+						windowSeg.WindowHeight = windows[windows.Count - 1].WindowHeight;
+						windowSeg.LineType = LineType.Window;
+						windowSeg.Height = _segments[i].Height;
+						windowSeg.ParentLine = _segments[i];
+						segments.Add(windowSeg);
+
+						int id2 = vbuffer.FindIndex (delegate(Vector3 obj) {
+							return (obj - _segments [i].b).sqrMagnitude <= 0.0001f;
+						});
+						if (id2 == -1)
+						{
+							id2 = vbuffer.Count;
+							vbuffer.Add(_segments[i].b);
+						}
+
+						Line lastSeg = new Line(vbuffer, iend, id2, _segments[i].InsulationThickness, _segments[i].WallThickness, _segments[i].LineMaterial, _segments[i].InnerMaterial, _segments[i].OuterMaterial, _segments[i].SideMaterial);
+						lastSeg.Height = _segments[i].Height;
+						lastSeg.LineType = LineType.Wall;
+						lastSeg.ParentLine = _segments[i];
+						segments.Add(lastSeg);
+					}
+
+
+
+				}
+				else
+				{
+					segments.Add(_segments[i]);
+				}
+		}
 
         // split segment to multiple segments for windows
-        for (int i = 0; i < _segments.Count; i++)
-        {
-
-            List<WallWindow> windows = new List<WallWindow>();
-            windows.AddRange(_segments[i].Windows);
-            for (int j = 0; j < _segments[i].Doors.Count; ++j)
-                windows.Add(_segments[i].Doors[j]);
-
-
-            if (windows.Count != 0)
-            {
-
-                windows.Sort(delegate (WallWindow x, WallWindow y) {
-                    return x.Position.x.CompareTo(y.Position.x);
-                });
-
-                if (windows[0].Position.x != 0)
-                {
-
-					int id1 = vbuffer.FindIndex (delegate(Vector3 obj) {
-						return (obj - _segments [i].a).sqrMagnitude <= 0.0001f;
-					});
-
-                    if (id1 == -1)
-                    {
-                        id1 = vbuffer.Count;
-                        vbuffer.Add(_segments[i].a);
-                    }
-                    Vector3 v2 = _segments[i].a + (_segments[i].b - _segments[i].a).normalized * windows[0].Position.x;
-					int id2 = vbuffer.FindIndex (delegate(Vector3 obj) {
-						return (obj - v2).sqrMagnitude <= 0.0001f;
-					});
-                    if (id2 == -1)
-                    {
-                        id2 = vbuffer.Count;
-                        vbuffer.Add(v2);
-                    }
-
-                    Line firstSeg = new Line(vbuffer, id1, id2, _segments[i].InsulationThickness, _segments[i].WallThickness, _segments[i].LineMaterial, _segments[i].InnerMaterial, _segments[i].OuterMaterial, _segments[i].SideMaterial);
-                    firstSeg.Height = _segments[i].Height;
-                    firstSeg.LineType = LineType.Wall;
-                    firstSeg.ParentLine = _segments[i];
-                    segments.Add(firstSeg);
-                }
-
-                for (int j = 0; j < windows.Count - 1; j++)
-                {
-                    Vector3 start = _segments[i].a + (_segments[i].b - _segments[i].a).normalized * windows[j].Position.x;
-                    Vector3 end = _segments[i].a + (_segments[i].b - _segments[i].a).normalized * (windows[j].Position.x + windows[j].WindowWidth);
-
-					int istart = vbuffer.FindIndex (delegate(Vector3 obj) {
-						return (obj - start).sqrMagnitude <= 0.0001f;
-					});
-                    if (istart == -1)
-                    {
-                        istart = vbuffer.Count;
-                        vbuffer.Add(start);
-                    }
-					int iend = vbuffer.FindIndex (delegate(Vector3 obj) {
-						return (obj - end).sqrMagnitude <= 0.0001f;
-					});
-                    if (iend == -1)
-                    {
-                        iend = vbuffer.Count;
-                        vbuffer.Add(end);
-                    }
-
-
-                    Line windowSeg = new Line(vbuffer, istart, iend, _segments[i].InsulationThickness, _segments[i].WallThickness, _segments[i].LineMaterial, _segments[i].InnerMaterial, _segments[i].OuterMaterial, _segments[i].SideMaterial);
-                    windowSeg.LedgeHeight = windows[j].Position.y;
-                    windowSeg.WindowHeight = windows[j].WindowHeight;
-                    windowSeg.LineType = LineType.Window;
-                    windowSeg.Height = _segments[i].Height;
-                    windowSeg.ParentLine = _segments[i];
-                    segments.Add(windowSeg);
-
-                    Vector3 nextStart = _segments[i].a + (_segments[i].b - _segments[i].a).normalized * windows[j + 1].Position.x;
-					int inextStart = vbuffer.FindIndex (delegate(Vector3 obj) {
-						return (obj - nextStart).sqrMagnitude <= 0.0001f;
-					});
-                    if (inextStart == -1)
-                    {
-                        inextStart = vbuffer.Count;
-                        vbuffer.Add(nextStart);
-                    }
-                    Line nextSeg = new Line(vbuffer, iend, inextStart, _segments[i].InsulationThickness, _segments[i].WallThickness, _segments[i].LineMaterial, _segments[i].InnerMaterial, _segments[i].OuterMaterial, _segments[i].SideMaterial);
-                    nextSeg.Height = _segments[i].Height;
-                    nextSeg.LineType = LineType.Wall;
-                    nextSeg.ParentLine = _segments[i];
-                    segments.Add(nextSeg);
-                }
-
-                {
-                    Vector3 start = _segments[i].a + (_segments[i].b - _segments[i].a).normalized * windows[windows.Count - 1].Position.x;
-                    Vector3 end = _segments[i].a + (_segments[i].b - _segments[i].a).normalized * (windows[windows.Count - 1].Position.x + windows[windows.Count - 1].WindowWidth);
-					int istart = vbuffer.FindIndex (delegate(Vector3 obj) {
-						return (obj - start).sqrMagnitude <= 0.0001f;
-					});
-                    if (istart == -1)
-                    {
-                        istart = vbuffer.Count;
-                        vbuffer.Add(start);
-                    }
-					int iend = vbuffer.FindIndex (delegate(Vector3 obj) {
-						return (obj - end).sqrMagnitude <= 0.0001f;
-					});
-                    if (iend == -1)
-                    {
-                        iend = vbuffer.Count;
-                        vbuffer.Add(end);
-                    }
-
-
-                    Line windowSeg = new Line(vbuffer, istart, iend, _segments[i].InsulationThickness, _segments[i].WallThickness, _segments[i].LineMaterial, _segments[i].InnerMaterial, _segments[i].OuterMaterial, _segments[i].SideMaterial);
-                    windowSeg.LedgeHeight = windows[windows.Count - 1].Position.y;
-                    windowSeg.WindowHeight = windows[windows.Count - 1].WindowHeight;
-                    windowSeg.LineType = LineType.Window;
-                    windowSeg.Height = _segments[i].Height;
-                    windowSeg.ParentLine = _segments[i];
-                    segments.Add(windowSeg);
-
-					int id2 = vbuffer.FindIndex (delegate(Vector3 obj) {
-						return (obj - _segments [i].b).sqrMagnitude <= 0.0001f;
-					});
-                    if (id2 == -1)
-                    {
-                        id2 = vbuffer.Count;
-                        vbuffer.Add(_segments[i].b);
-                    }
-
-                    Line lastSeg = new Line(vbuffer, iend, id2, _segments[i].InsulationThickness, _segments[i].WallThickness, _segments[i].LineMaterial, _segments[i].InnerMaterial, _segments[i].OuterMaterial, _segments[i].SideMaterial);
-                    lastSeg.Height = _segments[i].Height;
-                    lastSeg.LineType = LineType.Wall;
-                    lastSeg.ParentLine = _segments[i];
-                    segments.Add(lastSeg);
-                }
-
-
-
-            }
-            else
-            {
-                segments.Add(_segments[i]);
-            }
+    
         }
 
 
@@ -1182,7 +1202,7 @@ public class Line
 
 
 
-			int[] intersectionCount = new int[100];
+			int[] intersectionCount = new int[10];
 
 
 			for (int test = 0; test < intersectionCount.Length; test++) {
@@ -1732,71 +1752,74 @@ public class Line
 				continue;
 
 
-			int[] intersectionCount = { 0, 0 };
+			int[][] intersectionCount = new int[10][];
+			for (int i = 0; i < intersectionCount.Length; i++) {
+				intersectionCount [i] = new int[2]{ 0, 0 };
+			}
+
 			HashSet<int> e2indices = new HashSet<int>();
-			Vector3 randomOutterVector = new Vector3 (Random.Range(5000.0f, 10000.0f), lines[0].a.y, Random.Range(5000.0f, 10000.0f));
-			for (int i = 0; i < e2index; i++)
-			{
-				bool flag = true;
 
-				for (int k = 0; k < lines.Count; ++k)
-				{
+			for (int test = 0; test < intersectionCount.Length; test++) {
+				
+			
+				Vector3 randomOutterVector = new Vector3 (Random.Range (5000.0f, 10000.0f), lines [0].a.y, Random.Range (5000.0f, 10000.0f));
+				for (int i = 0; i < e2index; i++) {
+					bool flag = true;
 
-					Vector3 tmp;
-					if (RayRayIntersection(out tmp, x1[i], x2[i], lines[k].a, lines[k].b))
-					{
+					for (int k = 0; k < lines.Count; ++k) {
+
+						Vector3 tmp;
+						if (RayRayIntersection (out tmp, x1 [i], x2 [i], lines [k].a, lines [k].b)) {
 						
-						float dst = (tmp - x1 [i]).sqrMagnitude;
-						if (dst < (x2[i] - x1[i]).sqrMagnitude && dst > epsilon)
-						{
-							if (Vector3.Dot(tmp - x1[i], (x2[i] - x1[i]).normalized) >= 0)
-							{
-								if (Mathf.Abs((tmp - lines[k].a).magnitude + (tmp - lines[k].b).magnitude - (lines[k].a - lines[k].b).magnitude) <= epsilon)
-								{
-									if ((tmp - lines [k].a).sqrMagnitude > epsilon && (tmp - lines [k].b).sqrMagnitude > epsilon)
-									{
-										flag = false;
-										break;
+							float dst = (tmp - x1 [i]).sqrMagnitude;
+							if (dst < (x2 [i] - x1 [i]).sqrMagnitude && dst > epsilon) {
+								if (Vector3.Dot (tmp - x1 [i], (x2 [i] - x1 [i]).normalized) >= 0) {
+									if (Mathf.Abs ((tmp - lines [k].a).magnitude + (tmp - lines [k].b).magnitude - (lines [k].a - lines [k].b).magnitude) <= epsilon) {
+										if ((tmp - lines [k].a).sqrMagnitude > epsilon && (tmp - lines [k].b).sqrMagnitude > epsilon) {
+											flag = false;
+											break;
+										}
 									}
 								}
 							}
 						}
-					}
-					float tmpp1, tmpp2;
-					if (RayRayIntersection(out tmp, lines[k].a, lines[k].b, middlePoint[i], randomOutterVector))
-					{
-						tmpp1 = (tmp - randomOutterVector).magnitude;
-						tmpp2 = (middlePoint [i] - randomOutterVector).magnitude;
-						if ((tmp - randomOutterVector).magnitude <= (middlePoint[i] - randomOutterVector).magnitude)
-						{
-							tmpp1 = Mathf.Abs ((tmp - lines [k].a).magnitude + (tmp - lines [k].b).magnitude - (lines [k].b - lines [k].a).magnitude);
+						float tmpp1, tmpp2;
+						if (RayRayIntersection (out tmp, lines [k].a, lines [k].b, middlePoint [i], randomOutterVector)) {
+							tmpp1 = (tmp - randomOutterVector).magnitude;
+							tmpp2 = (middlePoint [i] - randomOutterVector).magnitude;
+							if ((tmp - randomOutterVector).magnitude <= (middlePoint [i] - randomOutterVector).magnitude) {
+								tmpp1 = Mathf.Abs ((tmp - lines [k].a).magnitude + (tmp - lines [k].b).magnitude - (lines [k].b - lines [k].a).magnitude);
 
-							if (Mathf.Abs((tmp - lines[k].a).magnitude + (tmp - lines[k].b).magnitude - (lines[k].b - lines[k].a).magnitude) <= epsilon)
-							{
-								tmpp1 = (tmp - lines [k].a).sqrMagnitude;
-								tmpp2 = (tmp - lines [k].b).sqrMagnitude;
-								if ((tmp - lines [k].a).sqrMagnitude > epsilon && (tmp - lines [k].b).sqrMagnitude > epsilon) {
+								if (Mathf.Abs ((tmp - lines [k].a).magnitude + (tmp - lines [k].b).magnitude - (lines [k].b - lines [k].a).magnitude) <= epsilon) {
+									tmpp1 = (tmp - lines [k].a).sqrMagnitude;
+									tmpp2 = (tmp - lines [k].b).sqrMagnitude;
+									if ((tmp - lines [k].a).sqrMagnitude > epsilon && (tmp - lines [k].b).sqrMagnitude > epsilon) {
 									
-									if (Vector3.Dot (tmp - lines [k].a, lines [k].b - lines [k].a) >= 0) {
+										if (Vector3.Dot (tmp - lines [k].a, lines [k].b - lines [k].a) >= 0) {
 										
-										intersectionCount [i]++;
+											intersectionCount [test][i]++;
+										}
 									}
 								}
 							}
 						}
 					}
-				}
-				if (flag)
-				{
-					e2indices.Add(i);
+					if (flag) {
+						e2indices.Add (i);
+					}
 				}
 			}
 
 			if (e2index == -1)
 				continue;
 
+			int success = 0;
+			for (int i = 0; i < intersectionCount.Length; i++) {
+				success += intersectionCount [i] [0] % 2 == 1 ? 1 : 0;
+			}
+
 			// if (ray cast count middle to infinite % 2 == 1 break
-			if (e2indices.Contains(0) && intersectionCount[0] % 2 == 1)
+			if (e2indices.Contains(0) && success > intersectionCount.Length / 3)//intersectionCount[0] % 2 == 1)
 			{
 				//				triangles.Add (ix1);
 				//				triangles.Add (list [e1].aID == ix1 ? list [e1].bID : list [e1].aID);
@@ -1820,7 +1843,12 @@ public class Line
 				continue;
 			}
 
-			if (e2indices.Contains(1) && intersectionCount[1] % 2 == 1)
+			success = 0;
+			for (int i = 0; i < intersectionCount.Length; i++) {
+				success += intersectionCount [i] [1] % 2 == 1 ? 1 : 0;
+			}
+
+			if (e2indices.Contains(1) && success > intersectionCount.Length / 3)
 			{
 
 				HashSet<int> abc = new HashSet<int>() { ix1[1], ix2[1], list[e1].aID, list[e1].bID };
