@@ -146,24 +146,7 @@ public class Draggable : MonoBehaviour {
 					startedMoving = true;
 				}
 			} else if (Input.GetMouseButton (0) && startedMoving) {
-                //======================================================================
-                //======================================================================
-                //These lines are made to solve the problem of wall selection.
-                //This problem happens when dragging PointA or PointB of the wall in 
-                //way that the area of wall becomes zero
-                if (Vector3.Distance(WallFace.VarA, WallFace.VarB)<0.1) {
-                    for (int i=0; i<lines.Count; i++) {
-                        if (lines[i].a == WallFace.VarA) {
-                            lines[i].a = new Vector3(0.01f, lines[i].a.y , 0.01f);
-                            lines[i].b = new Vector3(lines[i].b.x, lines[i].b.y , lines[i].b.z);
-                        }
-                    }
-                    DragIfNotZero = true;
-
-                }
-                DragIfNotZero = false;
-                //=======================================================================
-                //=======================================================================
+                
 				IsDragging = true;
 				Vector3 mouseCurrentPosition = Camera.main.ScreenToWorldPoint (new Vector3 (Input.mousePosition.x, Input.mousePosition.y, distance));
 				mouseCurrentPosition = snapToGrid (mouseCurrentPosition);

@@ -12,14 +12,12 @@ public enum WallFaceType
 
 public class WallFace
 {
-    public static Vector3 VarA;
-    public static Vector3 VarB;
+  
     public WallFace(Vector3 a, Vector3 b, float upoffset, float height, Material wallMaterial, Material wireframeMaterial, Material selectedWallMaterial, Line relatedSegment){
 		_a = a;
         
 		_b = b;
-        VarA = a;
-        VarB = b;
+
         _upOffset = upoffset;
 		_height = height;
 
@@ -31,7 +29,7 @@ public class WallFace
 		update ();
 		WallMaterial = wallMaterial;
         
-        if (Vector3.Distance(WallFace.VarA, WallFace.VarB) > 0.1)
+
             //This condition is related to the area of the wall When dragging it.
             gameObject.AddComponent<MeshCollider>();
         
