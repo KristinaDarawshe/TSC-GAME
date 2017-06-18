@@ -1301,7 +1301,7 @@ public class BuildingArea : MonoBehaviour
 				case BuildingEditMode.WallFaceSelected:
 					{
 						//DeSelect Wall
-						if (Input.GetMouseButtonUp(1) && getSelectedWallFace() != null)
+						if (Input.GetMouseButtonDown(0) && getSelectedWallFace() != null)
 						{
 
 							selectedWallFace = null;
@@ -1393,8 +1393,9 @@ public class BuildingArea : MonoBehaviour
 						snapObject.SetActive(true);
 						snapObject.transform.position = hit.point;
 
-						if ((Input.GetMouseButtonDown(0))&& verticesSelected.Count == 0)
+						if ((Input.GetMouseButtonDown(0))&& verticesSelected.Count == 0 )
 						{
+							
 
 							if (!pointASelected)
 							{
