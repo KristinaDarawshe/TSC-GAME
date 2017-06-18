@@ -1172,6 +1172,13 @@ public class BuildingArea : MonoBehaviour
 									for (int i = 0; i < floorColliders.Count; i++) {
 										floorColliders [i].enabled = true;
 									}
+									// add wall matrial 
+									if (SelectedItem.itemType == type.Wall) {
+										WallFace wallface = getSelectedWallFace ();
+										if (wallface != null) {
+										}
+
+									}
 
 									if (SelectedItem.itemType == type.Window || SelectedItem.itemType == type.Door) {
 										WallFace wallface = getSelectedWallFace ();
@@ -1281,7 +1288,7 @@ public class BuildingArea : MonoBehaviour
 							else
 							{
 
-								if (viewingMode == ViewingMode.Exterior) {
+								if (viewingMode == ViewingMode.Exterior && !IsBasement) {
 									// when click add window and doors
 
 									for (int i = 0; i < floorColliders.Count; i++) {
@@ -1325,6 +1332,9 @@ public class BuildingArea : MonoBehaviour
 													} else if (SelectedItem.itemType == type.Door) {
 
 														new WallDoor (wallface.RelatedLine, location.x, SelectedItem.prefabItem.Size.z, SelectedItem.prefabItem.Size.y, tempObjectPlaceholder);
+													} else if (SelectedItem.itemType == type.Wall) {
+														new WallMaterial()
+													
 													}
 												}
 												//											else if (correctedLocation.HasValue) {
