@@ -311,10 +311,11 @@ public class BuildingArea : MonoBehaviour
 		ba.valueIns = valueIns;
 		ba.valueWall = valueWall;
 	}
+    List<Vector3> grid;
 
-	public void SetWorkingHeight(float y)
+    public void SetWorkingHeight(float y)
 	{
-		List<Vector3> grid = new List<Vector3>(); // 11 * 11
+		 grid = new List<Vector3>(); // 11 * 11
 		for (int i = -5; i <= 5; i++)
 		{
 			for (int j = -5; j <= 5; j++)
@@ -407,7 +408,20 @@ public class BuildingArea : MonoBehaviour
 
 	void vertexAHandleDraggable_StartMoving(GameObject sender, Vector3 oldPosition, Vector3 newPosition)
 	{
-		Mode = BuildingEditMode.WallVertexMoving;
+        //--------------------------------------------------------------------------------
+        //00000000000000000000000000000000000000000000000000000000000000000000000000000000
+        //This Code to solve the problem of dragging wall to zero area Named as Selection Wall Problem.
+        List<Vector3> LocalGrid = new List<Vector3>(grid);
+        for (int i = LocalGrid.Count - 1; i >= 0; i--)
+        {
+            if (LocalGrid[i].x == vertexBHandleObject.transform.position.x && LocalGrid[i].z == vertexBHandleObject.transform.position.z)
+                LocalGrid.RemoveAt(i);
+        }
+
+        vertexAHandleDraggable.SetAllowedPoints(LocalGrid.ToArray());
+        //00000000000000000000000000000000000000000000000000000000000000000000000000000000
+        //--------------------------------------------------------------------------------
+        Mode = BuildingEditMode.WallVertexMoving;
 		vertexBHandleDraggable.Enabled = false;
 		vertexBHandleObject.SetActive(false);
 		wallFaceHandleObject.SetActive(false);
@@ -444,7 +458,13 @@ public class BuildingArea : MonoBehaviour
 	{
 		//        if (IsWallOverBuildingArea(vertexAHandleObject.transform.position, vertexBHandleObject.transform.position))
 		{
-			Mode = BuildingEditMode.WallFaceSelected;
+            //--------------------------------------------------------------------------------
+            //00000000000000000000000000000000000000000000000000000000000000000000000000000000
+            //This Code is related to Selection Wall Problem : Zero Area.
+            vertexBHandleDraggable.SetAllowedPoints(grid.ToArray());
+            //00000000000000000000000000000000000000000000000000000000000000000000000000000000	
+            //--------------------------------------------------------------------------------
+            Mode = BuildingEditMode.WallFaceSelected;
 			vertexBHandleDraggable.Enabled = true;
 			vertexBHandleObject.SetActive(true);
 			wallFaceHandleDraggable.Enabled = true;
@@ -456,7 +476,22 @@ public class BuildingArea : MonoBehaviour
 
 	void vertexBHandleDraggable_StartMoving(GameObject sender, Vector3 oldPosition, Vector3 newPosition)
 	{
-		Mode = BuildingEditMode.WallVertexMoving;
+        //--------------------------------------------------------------------------------
+        //00000000000000000000000000000000000000000000000000000000000000000000000000000000
+        //This code to solve the problem of selection wall : Zero Area of Wall: When B moves to A and makes a Zero Area.
+        List<Vector3> LocalGrid;
+        Mode = BuildingEditMode.WallVertexMoving;
+        LocalGrid = new List<Vector3>(grid);
+        //LocalGrid.Remove(vertexAHandleObject.transform.position);
+        for (int i = LocalGrid.Count - 1; i >= 0; i--)
+        {
+            if (LocalGrid[i].x == vertexAHandleObject.transform.position.x && LocalGrid[i].z == vertexAHandleObject.transform.position.z)
+                LocalGrid.RemoveAt(i);
+        }
+        vertexBHandleDraggable.SetAllowedPoints(LocalGrid.ToArray());
+        //00000000000000000000000000000000000000000000000000000000000000000000000000000000
+        //--------------------------------------------------------------------------------
+        Mode = BuildingEditMode.WallVertexMoving;
 		vertexAHandleDraggable.Enabled = false;
 		vertexAHandleObject.SetActive(false);
 		wallFaceHandleDraggable.Enabled = false;
@@ -493,7 +528,13 @@ public class BuildingArea : MonoBehaviour
 	{
 		//        if (IsWallOverBuildingArea(vertexAHandleObject.transform.position, vertexBHandleObject.transform.position))
 		{
-			Mode = BuildingEditMode.WallFaceSelected;
+            //--------------------------------------------------------------------------------
+            //00000000000000000000000000000000000000000000000000000000000000000000000000000000
+            //This Code is related to Selection Wall Problem : Zero Area.
+            vertexAHandleDraggable.SetAllowedPoints(grid.ToArray());
+            //00000000000000000000000000000000000000000000000000000000000000000000000000000000
+            //--------------------------------------------------------------------------------
+            Mode = BuildingEditMode.WallFaceSelected;
 			vertexAHandleDraggable.Enabled = true;
 			vertexAHandleObject.SetActive(true);
 			wallFaceHandleDraggable.Enabled = true;
