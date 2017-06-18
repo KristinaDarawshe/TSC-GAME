@@ -1333,8 +1333,7 @@ public class BuildingArea : MonoBehaviour
 
 														new WallDoor (wallface.RelatedLine, location.x, SelectedItem.prefabItem.Size.z, SelectedItem.prefabItem.Size.y, tempObjectPlaceholder);
 													} else if (SelectedItem.itemType == type.Wall) {
-														new WallMaterial()
-													
+
 													}
 												}
 												//											else if (correctedLocation.HasValue) {
