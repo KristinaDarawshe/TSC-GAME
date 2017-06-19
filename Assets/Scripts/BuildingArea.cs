@@ -1155,7 +1155,7 @@ public class BuildingArea : MonoBehaviour
 				{
 				case BuildingEditMode.None:
 					{
-						if (Input.GetMouseButtonUp(0))
+						if (Input.GetMouseButtonDown(0))
 						{
 
 							if (SelectedItem == null) {
@@ -1171,6 +1171,13 @@ public class BuildingArea : MonoBehaviour
 								if (viewingMode == ViewingMode.Exterior) {
 									for (int i = 0; i < floorColliders.Count; i++) {
 										floorColliders [i].enabled = true;
+									}
+									// add wall matrial 
+									if (SelectedItem.itemType == type.Wall) {
+										WallFace wallface = getSelectedWallFace ();
+										if (wallface != null) {
+										}
+
 									}
 
 									if (SelectedItem.itemType == type.Window || SelectedItem.itemType == type.Door) {
@@ -1281,7 +1288,7 @@ public class BuildingArea : MonoBehaviour
 							else
 							{
 
-								if (viewingMode == ViewingMode.Exterior) {
+								if (viewingMode == ViewingMode.Exterior && !IsBasement) {
 									// when click add window and doors
 
 									for (int i = 0; i < floorColliders.Count; i++) {
@@ -1325,6 +1332,8 @@ public class BuildingArea : MonoBehaviour
 													} else if (SelectedItem.itemType == type.Door) {
 
 														new WallDoor (wallface.RelatedLine, location.x, SelectedItem.prefabItem.Size.z, SelectedItem.prefabItem.Size.y, tempObjectPlaceholder);
+													} else if (SelectedItem.itemType == type.Wall) {
+
 													}
 												}
 												//											else if (correctedLocation.HasValue) {
@@ -1342,7 +1351,7 @@ public class BuildingArea : MonoBehaviour
 				case BuildingEditMode.WallFaceSelected:
 					{
 						//DeSelect Wall
-						if (Input.GetMouseButtonUp(0) && getSelectedWallFace() != null)
+						if (Input.GetMouseButtonDown(0) && getSelectedWallFace() != null)
 						{
 
 							selectedWallFace = null;
@@ -1354,20 +1363,22 @@ public class BuildingArea : MonoBehaviour
 					}
 					break;
 				}
-
-				if (Input.GetMouseButtonDown(0))
-				{
-
-					if (selectedWallFace != null)
-					{
+			
+				if (Input.GetMouseButtonDown (0)) {
+					Debug.Log ("Hello");
+					if (selectedWallFace != null) {
 						cameraTarget = (selectedWallFace.a + selectedWallFace.b) * 0.5f + Vector3.up * selectedWallFace.Height * 0.5f;
 					}
-					if (Time.time - lastClickTime < DoubleClickCatchTime)
-					{
+					if (Time.time - lastClickTime < DoubleClickCatchTime) {
 						gameCamera.TargetObject = cameraTarget;
 					}
 					lastClickTime = Time.time;
+				}  else if (Input.GetMouseButtonDown (1)) {
+					Debug.Log ("hiiiiii");
+
+				
 				}
+					
 			}
 			//else 
 			{
@@ -1431,11 +1442,10 @@ public class BuildingArea : MonoBehaviour
 
 						snapObject.SetActive(true);
 						snapObject.transform.position = hit.point;
-						///=============================
-						/// we add Input.GetMouseButtonUp(0) to solve the selelcted wall problem by draw on realsing the left click
-						/// ==============================
-						if ((Input.GetMouseButtonDown(0) || Input.GetMouseButtonUp(0))&& verticesSelected.Count == 0)
+
+						if ((Input.GetMouseButtonDown(0))&& verticesSelected.Count == 0 )
 						{
+							
 
 							if (!pointASelected)
 							{
@@ -1530,6 +1540,9 @@ public class BuildingArea : MonoBehaviour
 						}
 						else if (Input.GetMouseButtonDown(1) || (Input.GetMouseButton(0) && verticesSelected.Count != 0))
 						{
+							Debug.Log ("ddkdddddds");
+							DraggedLine.Enabled = false;
+							pointASelected = false;
 
 							if (verticesSelected.Count == 0)
 							{
@@ -1547,10 +1560,13 @@ public class BuildingArea : MonoBehaviour
 							}
 							else
 							{
+								snapObject.SetActive(false);
+
 								verticesSelected.Clear();
 							}
 
 						}
+
 					}
 
 					hit.ToString();

@@ -7,6 +7,10 @@ public class EditableBuilding : MonoBehaviour {
 
 	public GameObject Grid;
 	public ItemsManager itemsManager;
+	public ItemsManager itemsManagerWindow;// connect  with the game controller (window)
+	public ItemsManager itemsManagerDoor;	// connect  with the game controller (Door)
+
+
 	public float CeilThickness = 0.2f;
 	bool ceilFlag = false;
 	void Start () {
@@ -156,6 +160,8 @@ public class EditableBuilding : MonoBehaviour {
 		List<BuildingArea> layers = GetLayers ();
 
 		itemsManager.BuildingArea = layers [id];
+		itemsManagerWindow.BuildingArea = layers [id];
+		itemsManagerDoor.BuildingArea = layers [id];
 
 		for (int i = 0; i < layers.Count; i++) {
 			layers [i].ClearSelection ();
