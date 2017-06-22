@@ -14,10 +14,7 @@ public enum DraggablePlane
 public class Draggable : MonoBehaviour {
 
 	DraggablePlane draggingPlane = DraggablePlane.XZ;
-    public static List<Line> lines = new List<Line>();
-    public static bool DragIfNotZero;
-    public static float XNum ;
-    public DraggablePlane DraggingPlane
+	public DraggablePlane DraggingPlane
 	{
 		get {
 			return draggingPlane;
@@ -38,6 +35,7 @@ public class Draggable : MonoBehaviour {
 				case DraggablePlane.XZ:
 					break;
 				case DraggablePlane.YZ:
+					
 					for (int i = 0; i < verts.Length; i++) {
 						float tmp = verts [i].x;
 						verts [i].x = verts [i].y;
@@ -138,60 +136,59 @@ public class Draggable : MonoBehaviour {
 					//offsetToGrid = snapToGrid (unsnappedPosition) - unsnappedPosition;
 					saved = transform.position;
 					startPosition = snapToGrid (pos);
-//					startPosition = pos;
+					//					startPosition = pos;
 					distance = dst;
 					if (StartMoving != null)
 						StartMoving (gameObject, startPosition, startPosition);
-//					saved = startPosition;
+					//					saved = startPosition;
 					startedMoving = true;
 				}
 			} else if (Input.GetMouseButton (0) && startedMoving) {
-                
 				IsDragging = true;
 				Vector3 mouseCurrentPosition = Camera.main.ScreenToWorldPoint (new Vector3 (Input.mousePosition.x, Input.mousePosition.y, distance));
 				mouseCurrentPosition = snapToGrid (mouseCurrentPosition);
-			
+
 				Vector3 dif = mouseCurrentPosition - startPosition;
 				saved += dif;
 				transform.position = saved;
 				startPosition = mouseCurrentPosition;
 
-                //dif = snapToGrid (dif);
+				//dif = snapToGrid (dif);
 
 
-                //unsnappedPosition += dif;
+				//unsnappedPosition += dif;
 
-                //				Vector3 tmp = snapToGrid (unsnappedPosition);
-                //				if (!XEnabled)
-                //					tmp.x = startPosition.x;
-                //				if (!YEnabled)
-                //					tmp.y = startPosition.y;
-                //				if (!ZEnabled)
-                //					tmp.z = startPosition.z;
-                //				tmp += offsetToGrid;
+				//				Vector3 tmp = snapToGrid (unsnappedPosition);
+				//				if (!XEnabled)
+				//					tmp.x = startPosition.x;
+				//				if (!YEnabled)
+				//					tmp.y = startPosition.y;
+				//				if (!ZEnabled)
+				//					tmp.z = startPosition.z;
+				//				tmp += offsetToGrid;
 
-				//scalling
-                Debug.Log("Dif "+dif.sqrMagnitude);
+
+
 				if (Moving != null && dif.sqrMagnitude > 0.00001f)
 					Moving (gameObject, startPosition - dif, startPosition);
-				
+
 
 				//transform.position = snapToGrid (transform.position);
-//				if (XEnabled)
-//					startPosition.x = mouseCurrentPosition.x;
-//				if (YEnabled)
-//					startPosition.y = mouseCurrentPosition.y;
-//				if (ZEnabled)
-//					startPosition.z = mouseCurrentPosition.z;
+				//				if (XEnabled)
+				//					startPosition.x = mouseCurrentPosition.x;
+				//				if (YEnabled)
+				//					startPosition.y = mouseCurrentPosition.y;
+				//				if (ZEnabled)
+				//					startPosition.z = mouseCurrentPosition.z;
 
 			} else if (Input.GetMouseButtonUp (0) && startedMoving) {
 
-//				if (FreezeX)
-//					startPosition.x = saved.x;
-//				if (FreezeY)
-//					startPosition.y = saved.y;
-//				if (FreezeZ)
-//					startPosition.x = saved.z;
+				//				if (FreezeX)
+				//					startPosition.x = saved.x;
+				//				if (FreezeY)
+				//					startPosition.y = saved.y;
+				//				if (FreezeZ)
+				//					startPosition.x = saved.z;
 
 
 				startedMoving = false;
@@ -210,10 +207,8 @@ public class Draggable : MonoBehaviour {
 		float dst = float.MaxValue;
 		Vector3 output = pos;
 		for (int i = 0; i < allowedPoints.Count; i++) {
-			
 			float det = (allowedPoints [i] - pos).sqrMagnitude;
 			if (dst > det) {
-				Debug.Log ("hi");
 				dst = det;
 				output = allowedPoints [i];
 			}

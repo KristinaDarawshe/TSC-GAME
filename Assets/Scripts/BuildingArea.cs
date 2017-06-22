@@ -97,6 +97,7 @@ public class BuildingArea : MonoBehaviour
 	public Material DefaultSideMaterial;
 	public Material DefaultRoofMaterial;
 	public Material DefaultFloorMaterial;
+	public Material NoDragge;
 
 	public float Height = 2.0f;
 	public bool isCeil = false;
@@ -323,6 +324,9 @@ public class BuildingArea : MonoBehaviour
 				if (((MeshCollider)BuildingAreaCollider).sharedMesh.triangles.Length == 0 || IsWallOverBuildingArea(new Vector3(i, y + 0.001f, j), new Vector3(i, y + 0.001f, j)))
 				{
 					grid.Add(new Vector3(i, y, j));
+					//grid.Add(new Vector3(i/2, y, j));
+					//grid.Add(new Vector3(i, y, j/2));
+
 				}
 			}
 		}
@@ -378,6 +382,7 @@ public class BuildingArea : MonoBehaviour
 	void WallFaceHandleDraggable_Moving(GameObject sender, Vector3 oldPosition, Vector3 newPosition)
 	{
 		Vector3 dif = newPosition - oldPosition;
+
 		//        if (IsWallOverBuildingArea(vertexAHandleObject.transform.position + dif, vertexBHandleObject.transform.position + dif))
 		{
 			wallFaceHandleObject.transform.position += dif;
@@ -692,9 +697,9 @@ public class BuildingArea : MonoBehaviour
 
 	void Awake()
 	{
-		Basement = GameObject.CreatePrimitive(PrimitiveType.Cube);
-		Basement.SetActive(false);
-
+//		Basement = GameObject.CreatePrimitive(PrimitiveType.Cube);
+//		Basement.SetActive(true);
+//
 		BuildingAreaCollider = GetComponent<Collider>();
 		viewingMode = ViewingMode.Exterior;
 		SelectedItem = null;
@@ -710,7 +715,6 @@ public class BuildingArea : MonoBehaviour
 		DraggedLine = new Line(new List<Vector3>() { Vector3.zero, Vector3.zero }, 0, 1, 0.2f, 0.2f, DraggedLineMaterial, null, null, null);
 		DraggedLine.Height = Height;
 		DraggedLine.Enabled = false;
-		Debug.Log ("new floor starts ");
 
 		if (VertexHandle != null)
 		{
@@ -1365,20 +1369,16 @@ public class BuildingArea : MonoBehaviour
 				}
 			
 				if (Input.GetMouseButtonDown (0)) {
-					Debug.Log ("Hello");
-					if (selectedWallFace != null) {
+					if (selectedWallFace != null)
+					{
 						cameraTarget = (selectedWallFace.a + selectedWallFace.b) * 0.5f + Vector3.up * selectedWallFace.Height * 0.5f;
 					}
-					if (Time.time - lastClickTime < DoubleClickCatchTime) {
+					if (Time.time - lastClickTime < DoubleClickCatchTime)
+					{
 						gameCamera.TargetObject = cameraTarget;
 					}
 					lastClickTime = Time.time;
-				}  else if (Input.GetMouseButtonDown (1)) {
-					Debug.Log ("hiiiiii");
-
-				
-				}
-					
+				}  
 			}
 			//else 
 			{
@@ -1451,17 +1451,16 @@ public class BuildingArea : MonoBehaviour
 							{
 								if (IsBasement) {
 									if (lines.Count == 0) {
-										DraggedLine.Enabled = true;
-										//DraggedLine = new Line (hit.point, hit.point, DraggedLineMaterial);
-										pointA = hit.point;
-										DraggedLine.a = hit.point;
-										DraggedLine.b = hit.point;
-										pointASelected = true;
+											DraggedLine.Enabled = true;
+											pointA = hit.point;
+											DraggedLine.a = hit.point;
+											DraggedLine.b = hit.point;
+											pointASelected = true;
+
 
 									} else {
-										if ( Line.isPointOverPath (lines,  hit.point)  ) {
+										if (Line.isPointOverPath (lines, hit.point)) {
 											DraggedLine.Enabled = true;
-											//DraggedLine = new Line (hit.point, hit.point, DraggedLineMaterial);
 											pointA = hit.point;
 											DraggedLine.a = hit.point;
 											DraggedLine.b = hit.point;
@@ -1474,7 +1473,6 @@ public class BuildingArea : MonoBehaviour
 								} else {
 
 									DraggedLine.Enabled = true;
-									//DraggedLine = new Line (hit.point, hit.point, DraggedLineMaterial);
 									pointA = hit.point;
 									DraggedLine.a = hit.point;
 									DraggedLine.b = hit.point;
@@ -1511,22 +1509,27 @@ public class BuildingArea : MonoBehaviour
 
 								// draw the basemenet if true else draw the floors
 								if (IsBasement) {
-
-									lines.Add(new Line(lineVertices, id1, id2, 0.1f, 0.1f, LineMaterial, DefaultInnerWallMaterial, DefaultOuterWallMaterial, DefaultSideMaterial));
-									lines[lines.Count - 1].Height =BasementHeight;
-									lines[lines.Count - 1].Parent = this.transform;
-									pointASelected = false;
-									DraggedLine.Enabled = false;
-									Debug.Log ("isbasement");
+									if (Line.Is45Degree0r0Degree (DraggedLine)) {
+										
+										lines.Add (new Line (lineVertices, id1, id2, 0.1f, 0.1f, LineMaterial, DefaultInnerWallMaterial, DefaultOuterWallMaterial, DefaultSideMaterial));
+										lines [lines.Count - 1].Height = BasementHeight;
+										lines [lines.Count - 1].Parent = this.transform;
+										pointASelected = false;
+										DraggedLine.Enabled = false;
+										Debug.Log ("isbasement");
+									}
+									
 								} 
 								else {
+									if (Line.Is45Degree0r0Degree (DraggedLine)) {
+										
 									lines.Add(new Line(lineVertices, id1, id2, 0.1f, 0.1f, LineMaterial, DefaultInnerWallMaterial, DefaultOuterWallMaterial, DefaultSideMaterial));
 									lines[lines.Count - 1].Height = Height;
 									lines[lines.Count - 1].Parent = this.transform;
 									pointASelected = false;
 									DraggedLine.Enabled = false;
-									//                          DraggedLine.Destroy ();
-									//                          DraggedLine = null;
+
+									} 
 								}
 								for (int i = 0; i < lines.Count; i++)
 								{
@@ -1540,9 +1543,7 @@ public class BuildingArea : MonoBehaviour
 						}
 						else if (Input.GetMouseButtonDown(1) || (Input.GetMouseButton(0) && verticesSelected.Count != 0))
 						{
-							Debug.Log ("ddkdddddds");
-							DraggedLine.Enabled = false;
-							pointASelected = false;
+
 
 							if (verticesSelected.Count == 0)
 							{
@@ -1560,11 +1561,11 @@ public class BuildingArea : MonoBehaviour
 							}
 							else
 							{
-								snapObject.SetActive(false);
 
 								verticesSelected.Clear();
 							}
-
+							DraggedLine.Enabled = false;
+							pointASelected = false;
 						}
 
 					}
@@ -1575,7 +1576,7 @@ public class BuildingArea : MonoBehaviour
 
 			}
 		}
-		Draggable.lines = lines;
+//		Draggable.lines = lines;
 
 	}
 
@@ -1733,8 +1734,9 @@ public class BuildingArea : MonoBehaviour
 
 	Vector3 snapToGrid(Vector3 pos)
 	{
-		int divx = (int)((pos.x > 0 ? pos.x + 0.5f * snapGridDistance : pos.x - 0.5f * snapGridDistance) / snapGridDistance);
-		divx *= snapGridDistance;
+		int divx = (int)((pos.x > 0 ? pos.x + 1.0f * snapGridDistance : pos.x - 1.0f * snapGridDistance) / snapGridDistance);
+		divx *= snapGridDistance;//99999999
+		Debug.Log("Divx "+ divx);
 		int divy = (int)((pos.y > 0 ? pos.y + 0.5f * snapGridDistance : pos.y - 0.5f * snapGridDistance) / snapGridDistance);
 		divy *= snapGridDistance;
 		int divz = (int)((pos.z > 0 ? pos.z + 0.5f * snapGridDistance : pos.z - 0.5f * snapGridDistance) / snapGridDistance);

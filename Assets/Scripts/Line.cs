@@ -138,6 +138,7 @@ public class Line
     public Material InnerMaterial;
     public Material OuterMaterial;
     public Material SideMaterial;
+	LineRenderer lr;
 
     public Material LineMaterial
     {
@@ -150,7 +151,6 @@ public class Line
             lr.material = value;
         }
     }
-    LineRenderer lr;
     public float InsulationThickness;
     public float WallThickness;
     public float Thickness{
@@ -168,6 +168,7 @@ public class Line
         Vertices = vertices;
         if (mat != null)
         {
+//			Debug.Log ("hi there");
             lr = new GameObject("line").AddComponent<LineRenderer>();
             lr.gameObject.AddComponent<MeshCollider>();
             this.LineMaterial = mat;
@@ -555,6 +556,28 @@ public class Line
 		return false;
 
 	}
+
+	public static bool Is45Degree0r0Degree (Line L){
+		float X1 = 0.0F;
+		float X2 = 0.0f;
+		float Z1 = 0.0f;
+		float Z2 = 0.0f;
+
+		X1 = L.a.x;
+		X2 = L.b.x;
+		Z1 = L.a.z;
+		Z2 = L.b.z;
+		if ((X2 - X1) / (Z2 - Z1) == Mathf.Infinity || (X2 - X1) / (Z2 - Z1) == -1 * Mathf.Infinity) {
+			return true;
+		}	
+		if ((X2 - X1) / (Z2 - Z1) == -1 || (X2 - X1) / (Z2 - Z1) == 1 ||  (X2 - X1) / (Z2 - Z1) == 0 ) {
+			Debug.Log ("Slope: " + (X2 - X1) / (Z2 - Z1));
+			return true;
+		} else {
+			Debug.Log ("Slope: "+ (X2 - X1) / (Z2 - Z1) );
+			return false;
+		}
+	} 
 
     static void WeldInterstion(List<Vector3> segmentsWithContour, int l11, int l12, int l21, int l22)
     {

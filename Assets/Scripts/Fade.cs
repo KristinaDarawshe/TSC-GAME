@@ -57,12 +57,16 @@ public class Fade : MonoBehaviour {
 
     public void FadeOut()
     {
+		canvasGroup.interactable = true;
+
         startAlpha = 1;
         endAlpha = 0;
         timeSoFar = 0;
         fading = true;
         StartCoroutine(FadeCoroutine());
         gameObject.SetActive(false);
+
+
     }
 
     IEnumerator FadeCoroutine()
@@ -71,6 +75,8 @@ public class Fade : MonoBehaviour {
         SetAlpha(startAlpha);
         while (fading)
         {
+			canvasGroup.interactable = true;
+
             timeSoFar += Time.deltaTime;
 
             if (timeSoFar > changeTimeSeconds)
