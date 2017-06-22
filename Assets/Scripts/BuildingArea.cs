@@ -324,8 +324,7 @@ public class BuildingArea : MonoBehaviour
 				if (((MeshCollider)BuildingAreaCollider).sharedMesh.triangles.Length == 0 || IsWallOverBuildingArea(new Vector3(i, y + 0.001f, j), new Vector3(i, y + 0.001f, j)))
 				{
 					grid.Add(new Vector3(i, y, j));
-					//grid.Add(new Vector3(i/2, y, j));
-					//grid.Add(new Vector3(i, y, j/2));
+
 
 				}
 			}
@@ -1734,9 +1733,8 @@ public class BuildingArea : MonoBehaviour
 
 	Vector3 snapToGrid(Vector3 pos)
 	{
-		int divx = (int)((pos.x > 0 ? pos.x + 1.0f * snapGridDistance : pos.x - 1.0f * snapGridDistance) / snapGridDistance);
+		int divx = (int)((pos.x > 0 ? pos.x + 0.5f * snapGridDistance : pos.x - 0.5f * snapGridDistance) / snapGridDistance);
 		divx *= snapGridDistance;//99999999
-		Debug.Log("Divx "+ divx);
 		int divy = (int)((pos.y > 0 ? pos.y + 0.5f * snapGridDistance : pos.y - 0.5f * snapGridDistance) / snapGridDistance);
 		divy *= snapGridDistance;
 		int divz = (int)((pos.z > 0 ? pos.z + 0.5f * snapGridDistance : pos.z - 0.5f * snapGridDistance) / snapGridDistance);
