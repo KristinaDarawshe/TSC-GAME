@@ -34,8 +34,8 @@ public class ItemsManager : MonoBehaviour
                 });
 
                 buttonImage.sprite = allObjectList[i].image;
-                button.GetComponentInChildren<Text>(true).text = allObjectList[i].itemName;
-
+                //button.GetComponentInChildren<Text>(true).text = allObjectList[i].itemName;
+				button.GetComponentInChildren<Text>(true).text ="";
                 toggle.group = tg;
                 int currentI = i;
                 toggle.onValueChanged.AddListener(new UnityEngine.Events.UnityAction<bool>(delegate (bool arg0)
@@ -80,7 +80,9 @@ public class ItemsManager : MonoBehaviour
                     return img.name == "Image";
                 });
                 buttonImage.sprite = allObjectList[i].image;
-                button.GetComponentInChildren<Text>(true).text = allObjectList[i].itemName;
+               // button.GetComponentInChildren<Text>(true).text = allObjectList[i].itemName;
+				button.GetComponentInChildren<Text>(true).text = "";
+
                 button.GetComponent<Button>().onClick.AddListener(() => OnButtonClick("xxxx"));
                 
 
