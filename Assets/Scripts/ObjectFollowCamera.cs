@@ -15,7 +15,7 @@ public class ObjectFollowCamera : MonoBehaviour
 	public int cameraZoomMin = 5;
 
 
-
+	Vector3 savedPerspectiveDirection;
 
     float currentTime;
     Vector3 _targetObject;
@@ -54,9 +54,7 @@ public class ObjectFollowCamera : MonoBehaviour
     public void Rotate(float angle)
     {
         SetDirection(Quaternion.AngleAxis(angle, Vector3.up) * Direction);
-		Camera.main.orthographic = false ;
-
-	
+		Camera.main.orthographic = false;
     }
 
 	public void  RotateScene() 
@@ -68,6 +66,17 @@ public class ObjectFollowCamera : MonoBehaviour
 
 	}
 
+	public void SwitchTopOrthogonalView()
+	{
+		if (Camera.main.orthographic) {
+			SetDirection (savedPerspectiveDirection, true);
+			Camera.main.orthographic = false;
+		} else {
+			savedPerspectiveDirection = Direction;
+			SetDirection (Vector3.up * Direction.magnitude, true);
+			Camera.main.orthographic = true;
+		}
+	}
 
 
     public Vector3 Direction
@@ -116,8 +125,6 @@ public class ObjectFollowCamera : MonoBehaviour
         TargetObject = Vector3.zero;
         SetDirection(Vector3.right + Vector3.up * 0.5f);
 		CameraAllowedSpace.enabled = false;
-	
-	
     }
 
 
@@ -241,7 +248,7 @@ public class ObjectFollowCamera : MonoBehaviour
 		}
 	}
 
-    }
+}
 
 
 

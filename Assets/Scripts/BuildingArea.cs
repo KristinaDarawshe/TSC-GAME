@@ -330,12 +330,18 @@ public class BuildingArea : MonoBehaviour
 			}
 		}
 		Vector3[] aGrid = grid.ToArray();
-		try{vertexAHandleDraggable.SetAllowedPoints(aGrid);
+		try{
+			vertexAHandleDraggable.SetAllowedPoints(aGrid);
+		}catch{
+		}
+		try{
 			vertexBHandleDraggable.SetAllowedPoints(aGrid);
+		}catch{
+		}
+		try{
 			wallFaceHandleDraggable.SetAllowedPoints(aGrid);
 		}catch{
 		}
-
 	}
 
 	List<GameObject> items = new List<GameObject>();
@@ -607,6 +613,7 @@ public class BuildingArea : MonoBehaviour
 				}
 			}
 		}
+		regeneratePath (false);
 	}
 
 	Collider BuildingAreaCollider;
@@ -979,6 +986,7 @@ public class BuildingArea : MonoBehaviour
 
 		if (!enabled)
 			return;
+		
 		//
 		//        if (IsBasement)
 		//        {
@@ -1442,7 +1450,13 @@ public class BuildingArea : MonoBehaviour
 						snapObject.SetActive(true);
 						snapObject.transform.position = hit.point;
 
-						if ((Input.GetMouseButtonDown(0))&& verticesSelected.Count == 0 )
+						if (pointASelected && (Input.GetKeyDown (KeyCode.Escape) || Input.GetMouseButton (1))) 
+						{
+							pointASelected = false;
+							DraggedLine.Enabled = false;
+						}
+
+						if ((Input.GetMouseButtonDown(0)) && verticesSelected.Count == 0 )
 						{
 							
 
@@ -1516,17 +1530,32 @@ public class BuildingArea : MonoBehaviour
 										pointASelected = false;
 										DraggedLine.Enabled = false;
 										Debug.Log ("isbasement");
+
+
+
+										DraggedLine.Enabled = true;
+										pointA = hit.point;
+										DraggedLine.a = hit.point;
+										DraggedLine.b = hit.point;
+										pointASelected = true;
 									}
 									
 								} 
 								else {
 									if (Line.Is45Degree0r0Degree (DraggedLine)) {
 										
-									lines.Add(new Line(lineVertices, id1, id2, 0.1f, 0.1f, LineMaterial, DefaultInnerWallMaterial, DefaultOuterWallMaterial, DefaultSideMaterial));
-									lines[lines.Count - 1].Height = Height;
-									lines[lines.Count - 1].Parent = this.transform;
-									pointASelected = false;
-									DraggedLine.Enabled = false;
+										lines.Add(new Line(lineVertices, id1, id2, 0.1f, 0.1f, LineMaterial, DefaultInnerWallMaterial, DefaultOuterWallMaterial, DefaultSideMaterial));
+										lines[lines.Count - 1].Height = Height;
+										lines[lines.Count - 1].Parent = this.transform;
+										pointASelected = false;
+										DraggedLine.Enabled = false;
+
+
+										DraggedLine.Enabled = true;
+										pointA = hit.point;
+										DraggedLine.a = hit.point;
+										DraggedLine.b = hit.point;
+										pointASelected = true;
 
 									} 
 								}
@@ -1804,7 +1833,14 @@ public class BuildingArea : MonoBehaviour
 			for (int i = 0; i < floors.Count; i++)
 			{
 				GameObject floor = new GameObject("Room" + i.ToString() + "Floor");
-				floor.transform.position += Vector3.up * 0.001f;
+				if (isCeil)
+				{
+					floor.transform.position += Vector3.up * (Height - 0.001f);
+				}
+				else
+				{
+					floor.transform.position += Vector3.up * 0.001f;
+				}
 				floor.AddComponent<MeshFilter>().mesh = floors[i];
 				floor.AddComponent<MeshRenderer>().material = DefaultFloorMaterial;
 				floorColliders.Add(floor.AddComponent<MeshCollider>());
@@ -2218,4 +2254,15 @@ public class BuildingArea : MonoBehaviour
 	}
 	//-----------------------------------------------------------------------------------------------------------------------------
 	//-----------------------------------------------------------------------------------------------------------------------------
+
+	public void ApplyItem(item obj)
+	{
+		if (obj != null && obj.itemType == type.Wall) {
+			if (selectedWallFace != null) {
+				WallMaterial mats = obj.prefabItem.gameObject.GetComponent<WallMaterial> ();
+				SetSelectedWallFaceMaterials (mats.InnerFaceMaterial, mats.OuterFaceMaterial, mats.SideFaceMaterial);
+			}
+		}
+	}
+
 }
