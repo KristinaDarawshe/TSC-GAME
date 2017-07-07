@@ -1175,18 +1175,31 @@ public class Line
         {
             int minSeg = -1;
             float dst = float.MaxValue;
+			float dot = epsilon;
             for (int j = 0; j < directedPaths[i].Count; j += 2)
             {
-				float det = (directedPaths[i][j] - (Vector3.right * 1000.0f + Vector3.up * directedPaths[0][0].y)).sqrMagnitude;
-				det += (directedPaths[i][j + 1] - (Vector3.right * 1000.0f + Vector3.up * directedPaths[0][0].y)).sqrMagnitude;
+				float det = (directedPaths[i][j] - (Vector3.right * 1000.0f + Vector3.up * directedPaths[0][0].y)).magnitude;
+				det += (directedPaths[i][j + 1] - (Vector3.right * 1000.0f + Vector3.up * directedPaths[0][0].y)).magnitude;
                 if (det < dst)
                 {
-					if (Mathf.Abs(Vector3.Dot(Vector3.Normalize(directedPaths[i][j] - directedPaths[i][j + 1]), Vector3.forward)) > epsilon)
+					float tdot = Mathf.Abs (Vector3.Dot (Vector3.Normalize (directedPaths [i] [j] - directedPaths [i] [j + 1]), Vector3.forward));
+					if (tdot > epsilon)
 					{
 	                    dst = det;
 	                    minSeg = j;
+						dot = tdot;
 					}
                 }
+				else if (Mathf.Abs(det - dst) <= 0.001)
+				{
+					float tdot = Mathf.Abs (Vector3.Dot (Vector3.Normalize (directedPaths [i] [j] - directedPaths [i] [j + 1]), Vector3.forward));
+					if (tdot > dot)
+					{
+						dst = det;
+						minSeg = j;
+						dot = tdot;
+					}
+				}
             }
 
             if (minSeg != -1)
@@ -1213,40 +1226,39 @@ public class Line
         upperWallFace = null;
 
 
-        // for each path find intersection count from (any vertex) to (infinite) which will determine if this is inner or outer wall
-        // then generate walls or windows
-        // destroy line if its for the window (not original line)
-        for (int i = 0; i < directedPaths.Count; i++)
-        {
-            // bug .. [\] will not work correctly
+		for (int i = 0; i < directedPaths.Count; i++) {
+			
            
-            //if (i == 1)
-            //  randomVertex = new Vector3 (2.9f, 0, 2.4f);
-
-
-
-			int[] intersectionCount = new int[10];
+			int[] intersectionCount = new int[30];
 
 
 			for (int test = 0; test < intersectionCount.Length; test++) {
-				intersectionCount [test] = 0;
-				Vector3 randomOutterPoint = new Vector3 (Random.Range (10000.0f, 50000.0f), directedPaths [0] [0].y, Random.Range (10000.0f, 50000.0f));
-				int rand = Random.Range(0, directedPaths[i].Count / 2) * 2;
-				Vector3 randomVertex = Vector3.Lerp(directedPaths[i][rand], directedPaths[i][rand + 1], Random.Range(5, 95) / 100.0f);
+
+
+				Vector3 randomOutterVector = new Vector3 (Random.Range (5000.0f, 10000.0f), directedPaths [0] [0].y, Random.Range (5000.0f, 10000.0f));
+				int rand = Random.Range (0, directedPaths [i].Count / 2) * 2;
+				Vector3 randomVertex = Vector3.Lerp (directedPaths [i] [rand], directedPaths [i] [rand + 1], Random.Range (5, 95) / 100.0f);
 
 
 				for (int j = 0; j < directedPaths.Count; j++) {
 					if (i != j) {
 						for (int k = 0; k < directedPaths [j].Count; k += 2) {
-
+							float tmpp1, tmpp2;
 							Vector3 tmp;
+							if (RayRayIntersection (out tmp, directedPaths [j] [k], directedPaths [j] [k + 1], randomVertex, randomOutterVector)) {
+								tmpp1 = (tmp - randomOutterVector).magnitude;
+								tmpp2 = (randomVertex - randomOutterVector).magnitude;
+								if ((tmp - randomOutterVector).magnitude <= (randomVertex - randomOutterVector).magnitude) {
+									tmpp1 = Mathf.Abs ((tmp - directedPaths [j] [k]).magnitude + (tmp - directedPaths [j] [k + 1]).magnitude - (directedPaths [j] [k + 1] - directedPaths [j] [k]).magnitude);
 
-							if (RayRayIntersection (out tmp, directedPaths [j] [k], directedPaths [j] [k + 1], randomVertex, randomOutterPoint)) {
-								if ((tmp - randomOutterPoint).magnitude <= (randomVertex - randomOutterPoint).magnitude) {
-									if ((tmp - directedPaths [j] [k]).magnitude <= (directedPaths [j] [k + 1] - directedPaths [j] [k]).magnitude) {
+									if (Mathf.Abs ((tmp - directedPaths [j] [k]).magnitude + (tmp - directedPaths [j] [k + 1]).magnitude - (directedPaths [j] [k + 1] - directedPaths [j] [k]).magnitude) <= epsilon) {
+										tmpp1 = (tmp - directedPaths [j] [k]).sqrMagnitude;
+										tmpp2 = (tmp - directedPaths [j] [k + 1]).sqrMagnitude;
 										if ((tmp - directedPaths [j] [k]).sqrMagnitude > epsilon && (tmp - directedPaths [j] [k + 1]).sqrMagnitude > epsilon) {
+
 											if (Vector3.Dot (tmp - directedPaths [j] [k], directedPaths [j] [k + 1] - directedPaths [j] [k]) >= 0) {
-												intersectionCount[test]++;
+
+												intersectionCount [test]++;
 											}
 										}
 									}
@@ -1256,13 +1268,15 @@ public class Line
 					}
 				}
 			}
+					
 
+
+				
 			int success = 0;
 			for (int test = 0; test < intersectionCount.Length; test++) {
 				success += (intersectionCount [test] % 2 == 1 ? 1 : 0);
 			}
-
-
+				
 			if (success > intersectionCount.Length / 4)
             {
                 directedPaths[i].Reverse();
