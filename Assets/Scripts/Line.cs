@@ -403,6 +403,8 @@ public class Line
     /// <param name="line2Point2">Line2 point2.</param>
     public static bool RayRayIntersection(out Vector3 intersection, Vector3 line1Point1, Vector3 line1Point2, Vector3 line2Point1, Vector3 line2Point2)
     {
+		const float Threshold = 0.1f;
+
         Vector3 lineVec3 = line2Point1 - line1Point1;
         Vector3 lineVec1 = line1Point1 - line1Point2;
         Vector3 lineVec2 = line2Point1 - line2Point2;
@@ -413,7 +415,7 @@ public class Line
 
         //is coplanar, and not parrallel
 
-		if (Mathf.Abs(planarFactor) < epsilon)
+		if (Mathf.Abs(planarFactor) < Threshold)
         {
 
 			if (crossVec1and2.sqrMagnitude > epsilon)
@@ -1175,7 +1177,7 @@ public class Line
         {
             int minSeg = -1;
             float dst = float.MaxValue;
-			float dot = epsilon;
+			float dot = 0.2f;
             for (int j = 0; j < directedPaths[i].Count; j += 2)
             {
 				float det = (directedPaths[i][j] - (Vector3.right * 1000.0f + Vector3.up * directedPaths[0][0].y)).magnitude;
@@ -1183,7 +1185,7 @@ public class Line
                 if (det < dst)
                 {
 					float tdot = Mathf.Abs (Vector3.Dot (Vector3.Normalize (directedPaths [i] [j] - directedPaths [i] [j + 1]), Vector3.forward));
-					if (tdot > epsilon)
+					if (tdot > 0.2f)
 					{
 	                    dst = det;
 	                    minSeg = j;
@@ -1229,13 +1231,13 @@ public class Line
 		for (int i = 0; i < directedPaths.Count; i++) {
 			
            
-			int[] intersectionCount = new int[30];
+			int[] intersectionCount = new int[10];
 
 
 			for (int test = 0; test < intersectionCount.Length; test++) {
 
 
-				Vector3 randomOutterVector = new Vector3 (Random.Range (5000.0f, 10000.0f), directedPaths [0] [0].y, Random.Range (5000.0f, 10000.0f));
+				Vector3 randomOutterVector = new Vector3 (Random.Range (-Random.Range (1000, 10000), Random.Range (1000, 10000)), directedPaths [0] [0].y, Random.Range (-Random.Range (1000, 10000), Random.Range (1000, 10000)));
 				int rand = Random.Range (0, directedPaths [i].Count / 2) * 2;
 				Vector3 randomVertex = Vector3.Lerp (directedPaths [i] [rand], directedPaths [i] [rand + 1], Random.Range (5, 95) / 100.0f);
 
@@ -1277,7 +1279,7 @@ public class Line
 				success += (intersectionCount [test] % 2 == 1 ? 1 : 0);
 			}
 				
-			if (success > intersectionCount.Length / 4)
+			if (success > intersectionCount.Length / 2)
             {
                 directedPaths[i].Reverse();
 

@@ -583,36 +583,11 @@ public class BuildingArea : MonoBehaviour
 	public void SetSelectedWallFaceMaterials(Material innerMaterial, Material outerMaterial, Material sideMaterial)
 	{
 		// this function will be called from material panel
-		List<Vector3> endpoints = new List<Vector3>();
-		endpoints.Add(selectedWallFace.RelatedLine.a);
+
 		selectedWallFace.RelatedLine.InnerMaterial = innerMaterial;
 		selectedWallFace.RelatedLine.OuterMaterial = outerMaterial;
 		selectedWallFace.RelatedLine.SideMaterial = sideMaterial;
-		for (int i = 0; i < endpoints.Count; i++)
-		{
 
-			for (int j = 0; j < lines.Count; j++)
-			{
-				if (lines[j] != selectedWallFace.RelatedLine)
-				{
-
-					if ((endpoints[i] - lines[j].a).sqrMagnitude <= 0.00001f && endpoints.FindIndex(delegate (Vector3 v) { return (lines[j].b - v).sqrMagnitude <= 0.00001f; }) == -1)
-					{
-						lines[j].InnerMaterial = innerMaterial;
-						lines[j].OuterMaterial = outerMaterial;
-						lines[j].SideMaterial = sideMaterial;
-						endpoints.Add(lines[j].b);
-					}
-					else if ((endpoints[i] - lines[j].b).sqrMagnitude <= 0.00001f && endpoints.FindIndex(delegate (Vector3 v) { return (lines[j].a - v).sqrMagnitude <= 0.00001f; }) == -1)
-					{
-						lines[j].InnerMaterial = innerMaterial;
-						lines[j].OuterMaterial = outerMaterial;
-						lines[j].SideMaterial = sideMaterial;
-						endpoints.Add(lines[j].a);
-					}
-				}
-			}
-		}
 		regeneratePath (false);
 	}
 
@@ -913,6 +888,9 @@ public class BuildingArea : MonoBehaviour
 
 	void Update()
 	{
+		vertexAHandleDraggable.doUpdate ();
+		vertexBHandleDraggable.doUpdate ();
+		wallFaceHandleDraggable.doUpdate ();
 		bool flagDoors = false, flagWindows = false;
 
 		//selected wall area
@@ -1364,8 +1342,8 @@ public class BuildingArea : MonoBehaviour
 						//DeSelect Wall
 						if (Input.GetMouseButtonDown(0) && getSelectedWallFace() != null)
 						{
-
-							selectedWallFace = null;
+							if (!vertexAHandleDraggable.IsDragging && !vertexBHandleDraggable.IsDragging && !wallFaceHandleDraggable.IsDragging)
+								selectedWallFace = null;
 						}
 					}
 					break;
@@ -1781,7 +1759,7 @@ public class BuildingArea : MonoBehaviour
 	/// <param name="optimize">If set to <c>true</c> optimize.</param>
 	public void regeneratePath(bool optimize)
 	{
-
+		
 		// we add the drawing code for th basement here 
 		Vector3 _selectedWallFaceA = Vector3.zero, _selectedWallFaceB = Vector3.zero;
 		if (_selectedWallFace != null)

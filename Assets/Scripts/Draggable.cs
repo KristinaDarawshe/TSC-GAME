@@ -113,7 +113,7 @@ public class Draggable : MonoBehaviour {
 
 
 	// Update is called once per frame
-	void Update () {
+	public void doUpdate () {
 		if (Enabled) {
 			bool isMouseOver = false;
 			Vector3 pos = Vector3.zero;
